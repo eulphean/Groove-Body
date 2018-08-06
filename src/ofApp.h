@@ -3,8 +3,13 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 
-class ofApp : public ofBaseApp{
+enum Mesh {
+  wireframe,
+  vertices,
+  faces
+};
 
+class ofApp : public ofBaseApp{
 	public:
 		void setup();
 		void update();
@@ -17,4 +22,6 @@ class ofApp : public ofBaseApp{
     ofEasyCam cam;
     float cameraOrbit;
     ofLight light;
+  
+    Mesh meshState = Mesh::wireframe; 
 };
