@@ -2,8 +2,9 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+  ofSetVerticalSync(false);
   ofBackground(ofColor::black);
-  ofSetVerticalSync(true);
+
   
   // Load human model.
   model.loadModel("basicman2.obj", false);
@@ -35,7 +36,7 @@ void ofApp::update(){
     
     while (iter != dynamicParticles.end()) {
       if (iter -> life > 0) {
-        float step = ofGetLastFrameTime()/10;
+        float step = ofGetLastFrameTime()/ofRandom(20,30);
         iter -> update(step);
         iter++;
       } else {
@@ -47,14 +48,12 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+  ofEnableDepthTest();
   // Draw the frame rate.
   ofDrawBitmapStringHighlight("FPS: " + ofToString(ofGetFrameRate()), 50, 50);
   ofDrawBitmapStringHighlight("Total Particles: " + ofToString(fixedParticles.size() + dynamicParticles.size()), 50, 65);
   
-  ofEnableDepthTest();
   cam.begin();
-  ofDrawAxis(2);
-  ofSetColor(ofColor::grey);
   
   // Mesh draw.
   switch (meshState) {
@@ -123,10 +122,9 @@ void ofApp::createDynamicParticles() {
   for (int i = 0; i < mesh.getVertices().size(); i++) {
     Particle p;
     p.position = mesh.getVertices()[i];
-    p.velocity = glm::vec3(ofRandom(-0.1, 0.1), ofRandom(-0.1, 0.1), ofRandom(-0.1, 0.1));
+    p.velocity = glm::vec3(ofRandom(-0.005, 0.005), ofRandom(-0.005, 0.005), ofRandom(-0.01, 0.01));
     p.radius = 0.1;
     p.color = ofColor::fromHsb(ofRandom(255), 255, 255);
-    p.life = 1.0;
     dynamicParticles.push_back(p);
   }
 }
