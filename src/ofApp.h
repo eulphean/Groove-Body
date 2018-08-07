@@ -8,7 +8,8 @@
 enum Mesh {
   wireframe,
   vertices,
-  faces
+  faces,
+  noFaces
 };
 
 class ofApp : public ofBaseApp{
@@ -20,17 +21,17 @@ class ofApp : public ofBaseApp{
 		void keyPressed(int key);
   
   private:
-    void createParticles();
+    void createFixedParticles();
+    void createDynamicParticles();
     void drawParticles();
   
-    vector<Particle> particles;
+    vector<Particle> fixedParticles;
+    vector<Particle> dynamicParticles;
     
     ofxAssimpModelLoader model;
+    ofMesh mesh;
+    Mesh meshState = Mesh::noFaces;
   
     ofEasyCam cam;
     float cameraOrbit;
-    ofLight light;
-    ofMesh mesh; 
-  
-    Mesh meshState = Mesh::wireframe;
 };

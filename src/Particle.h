@@ -5,17 +5,14 @@
 class Particle
 {
 public:
-    void update();
+    void update(float step);
     void draw();
+    void attractTo(glm::vec3 attractionPoint);
 
     glm::vec3 position;
     glm::vec3 velocity;
-    glm::vec3 acceleration;
-
+  
+    float life = 1.0f;
     float radius = 0.0;
     ofColor color;
-
-    glm::vec3 orientation;
-    glm::vec3 angularVelocity;
-    glm::vec3 angularAcceleration;
 };
