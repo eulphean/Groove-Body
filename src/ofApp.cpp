@@ -36,12 +36,18 @@ void ofApp::update(){
     
     while (iter != dynamicParticles.end()) {
       if (iter -> life > 0) {
-        float step = ofGetLastFrameTime()/ofRandom(20,30);
+        float step = ofGetLastFrameTime()/ofRandom(10,20);
         iter -> update(step);
         iter++;
       } else {
         iter = dynamicParticles.erase(iter);
       }
+    }
+  }
+  
+  if (fixedParticles.size() > 0) {
+    for (auto &p: fixedParticles) {
+      p.update(0);
     }
   }
 }
@@ -108,9 +114,9 @@ void ofApp::createFixedParticles() {
   fixedParticles.clear();
   for (int i = 0; i < mesh.getVertices().size(); i++) {
     Particle p;
-    p.position = mesh.getVertices()[i];
+    p.currentPosition = p.finalPosition = mesh.getVertices()[i];
     p.velocity = glm::vec3(0, 0, 0);
-    p.radius = 0.05;
+    p.radius = 0.1;
     p.color = ofColor::fromHsb(ofRandom(255), 255, 255);
 
     // Add a copy to our vector.
@@ -121,8 +127,8 @@ void ofApp::createFixedParticles() {
 void ofApp::createDynamicParticles() {
   for (int i = 0; i < mesh.getVertices().size(); i++) {
     Particle p;
-    p.position = mesh.getVertices()[i];
-    p.velocity = glm::vec3(ofRandom(-0.005, 0.005), ofRandom(-0.005, 0.005), ofRandom(-0.01, 0.01));
+    p.currentPosition = p.finalPosition = mesh.getVertices()[i];
+    p.velocity = glm::vec3(ofRandom(-0.005, 0.005), ofRandom(-0.005, 0.005), ofRandom(-0.1, 0.1));
     p.radius = 0.1;
     p.color = ofColor::fromHsb(ofRandom(255), 255, 255);
     dynamicParticles.push_back(p);
