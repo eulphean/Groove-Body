@@ -2,140 +2,159 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-  ofSetVerticalSync(false);
-  ofBackground(ofColor::black);
+    // Verbose, Notice, Warning, Error, FatalError, Silent
+    ofSetLogLevel(OF_LOG_VERBOSE);
+  
+    ofBackground(ofColor::black);
+  
+    // Load all the forms. 
+    loadForms();
 
+    // Setup camera.
+    cam.disableMouseInput();
+    cameraOrbit = 0;
   
-  // Load human model.
-  model.loadModel("basicman2.obj", false);
+    // Setup light.
+    light.setPosition(0, 0, 500);
+    light.setAreaLight(500, 500);
   
-  // Center the model.
-  model.setPosition(0, 0, 0);
-  model.setRotation(0, 180, 0, 0, 1);
-  model.setScale(1.5, 1.5, 1.5);
+    // Setup plane.
+    plane.set(1000, 1000);
+    plane.setPosition(0, 0, 0);
+    plane.rotateDeg(90, 1, 0, 0);
+    plane.setResolution(10, 10);
   
-  // Setup camera.
-  cameraOrbit = 0;
-  cam.setDistance(20);
+    // Setup GUI.
+    gui.setup();
+    gui.add(xCamera);
+    gui.add(yCamera);
+    gui.add(zCamera);
+    gui.add(tiltCamera);
+    gui.add(wireframe.setup("Wireframe", false));
+    gui.add(faces.setup("Faces", false));
+    gui.add(vertices.setup("Vertices", false));
+    gui.add(particles.setup("Particles", false));
   
-  // Retrieve ofMesh
-  mesh = model.getMesh(0);
-  cout << "Vertices " << mesh.getVertices().size() << "\n";
+    // Listeners
+    tiltCamera.addListener(this, &ofApp::cameraTiltCallback);
+    wireframe.addListener(this, &ofApp::wireframeCallback);
+    faces.addListener(this, &ofApp::facesCallback);
+    vertices.addListener(this, &ofApp::verticesCallback);
+    particles.addListener(this, &ofApp::particlesCallback);
   
-  // Create particles at each mesh vertex
-  createFixedParticles();
+    gui.loadFromFile(guiXml);
+    gui.setPosition(glm::vec2(50, 55));
+  
+    // Set tilt angle.
+    cam.tiltDeg(tiltCamera);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-  cameraOrbit += ofGetLastFrameTime() * 10.; // 20 degrees per second;
-  cam.orbitDeg(cameraOrbit, 0., cam.getDistance(), {0., 0., 0.});
-  
-  if (dynamicParticles.size() > 0) {
-    auto iter = dynamicParticles.begin();
-    
-    while (iter != dynamicParticles.end()) {
-      if (iter -> life > 0) {
-        float step = ofGetLastFrameTime()/ofRandom(10,20);
-        iter -> update(step);
-        iter++;
-      } else {
-        iter = dynamicParticles.erase(iter);
-      }
-    }
-  }
-  
-  if (fixedParticles.size() > 0) {
-    for (auto &p: fixedParticles) {
-      p.update(0);
-    }
-  }
+  // Update camera position.
+  cam.setPosition(xCamera, yCamera, zCamera);
+
+//  cameraOrbit += ofGetLastFrameTime() * 10.; // 20 degrees per second;
+//  cam.orbitDeg(cameraOrbit, 0., cam.getDistance(), {0., 0., 0.});
+//  glm::vec3 formCenter = forms[curFormIdx].model.getSceneCenter();
+//  cam.orbitDeg(cameraOrbit, 0., glm::distance(cam.getPosition(), formCenter), formCenter);
+
+  // Update the form for animation.
+  forms[curFormIdx].update();
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-  ofEnableDepthTest();
-  // Draw the frame rate.
-  ofDrawBitmapStringHighlight("FPS: " + ofToString(ofGetFrameRate()), 50, 50);
-  ofDrawBitmapStringHighlight("Total Particles: " + ofToString(fixedParticles.size() + dynamicParticles.size()), 50, 65);
-  
-  cam.begin();
-  
-  // Mesh draw.
-  switch (meshState) {
-    case Mesh::vertices: {
-      mesh.drawVertices();
-      break;
-    }
+  // Controls and debug.
+  if (!hideControls) {
+    gui.draw();
+    // Debug text
     
-    case Mesh::wireframe: {
-      mesh.drawWireframe();
-      break;
-    }
-    
-    case Mesh::faces: {
-      mesh.drawFaces();
-      break;
-    }
-    
-    default: {
-      break;
-    }
+    ofDrawBitmapStringHighlight("Vertices: " +  ofToString(forms[curFormIdx].getMeshVertexCount()),50, 10);
+    ofDrawBitmapStringHighlight("Frame Rate: " + ofToString(ofGetFrameRate()), 50, 40);
+    ofDrawBitmapStringHighlight("Dynamic Particle Count: " + ofToString(forms[curFormIdx].getDynamicParticleCount()), 50, 25);
   }
   
-  drawParticles();
+  ofSetColor(255);
+  cam.begin();
+    ofDrawAxis(5);
+    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
+    ofEnableDepthTest();
+    light.enable();
   
+    // Draw the model.
+    forms[curFormIdx].draw();
+  
+    ofDisableDepthTest();
+    light.disable();
+    ofDisableLighting();
   cam.end();
-  ofDisableDepthTest();
+}
+
+void ofApp::exit() {
+  gui.saveToFile(guiXml);
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-  // Change the state to draw.
-  if (key == OF_KEY_RETURN) {
-    if (meshState == Mesh::wireframe) {
-      meshState = Mesh::vertices;
-    } else if (meshState == Mesh::vertices) {
-      meshState = Mesh::faces;
-    } else if (meshState == Mesh::faces) {
-      meshState = Mesh::noFaces;
-    } else if (meshState == Mesh::noFaces) {
-      meshState = Mesh::wireframe;
-    }
+  if (key == ' ') {
+    curFormIdx = (curFormIdx + 1) % forms.size();
+    // Reset animation to start from the beginning. 
+    forms[curFormIdx].model.resetAllAnimations();
   }
   
-  // Create new particles
-  if (key == 'c') {
-    createDynamicParticles();
+  if (key == 'h') {
+    hideControls = !hideControls; 
   }
 }
 
-void ofApp::createFixedParticles() {
-  fixedParticles.clear();
-  for (int i = 0; i < mesh.getVertices().size(); i++) {
-    Particle p;
-    p.currentPosition = p.finalPosition = mesh.getVertices()[i];
-    p.velocity = glm::vec3(0, 0, 0);
-    p.radius = 0.1;
-    p.color = ofColor::fromHsb(ofRandom(255), 255, 255);
+void ofApp::loadForms() {
+  // Load all the models.
+  ofDirectory dir("Forms/");
+  dir.allowExt("dae");
+  dir.listDir();
+  for (int i = 0; i < dir.size(); i++) {
+    string filePath = dir.getPath(i);
+    Form form(filePath); // Create a form.
+    forms.push_back(form);
+  }
+  
+  ofLogNotice() << "Success: All the dae animations loaded." << "\n";
+}
 
-    // Add a copy to our vector.
-    fixedParticles.push_back(p);
+// GUI callbacks.
+void ofApp::cameraTiltCallback(float &angle) {
+  cam.tiltDeg(angle);
+}
+
+void ofApp::wireframeCallback(bool &value) {
+  if (value) {
+    forms[curFormIdx].pushDrawMode(DrawMode::Wireframe);
+  } else {
+    forms[curFormIdx].popDrawMode(DrawMode::Wireframe);
   }
 }
 
-void ofApp::createDynamicParticles() {
-  for (int i = 0; i < mesh.getVertices().size(); i++) {
-    Particle p;
-    p.currentPosition = p.finalPosition = mesh.getVertices()[i];
-    p.velocity = glm::vec3(ofRandom(-0.005, 0.005), ofRandom(-0.005, 0.005), ofRandom(-0.1, 0.1));
-    p.radius = 0.1;
-    p.color = ofColor::fromHsb(ofRandom(255), 255, 255);
-    dynamicParticles.push_back(p);
+void ofApp::facesCallback(bool &value) {
+  if (value) {
+    forms[curFormIdx].pushDrawMode(DrawMode::Faces);
+  } else {
+    forms[curFormIdx].popDrawMode(DrawMode::Faces);
   }
 }
 
-void ofApp::drawParticles() {
- for (Particle &p: fixedParticles) { p.draw(); }
- for (Particle &p: dynamicParticles) { p.draw(); }
+void ofApp::verticesCallback(bool &value) {
+  if (value) {
+    forms[curFormIdx].pushDrawMode(DrawMode::Vertices);
+  } else {
+    forms[curFormIdx].popDrawMode(DrawMode::Vertices);
+  }
+}
+
+void ofApp::particlesCallback(bool &value) {
+  if (value) {
+    forms[curFormIdx].pushDrawMode(DrawMode::Particles);
+  } else {
+    forms[curFormIdx].popDrawMode(DrawMode::Particles);
+  }
 }
