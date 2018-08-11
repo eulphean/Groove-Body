@@ -99,6 +99,24 @@ void ofApp::exit() {
 void ofApp::keyPressed(int key){
   if (key == ' ') {
     curFormIdx = (curFormIdx + 1) % forms.size();
+    
+    // Push current draw mode state.
+    if (wireframe == true) {
+      forms[curFormIdx].pushDrawMode(DrawMode::Wireframe);
+    }
+    
+    if (particles == true) {
+      forms[curFormIdx].pushDrawMode(DrawMode::Particles);
+    }
+    
+    if (faces == true) {
+      forms[curFormIdx].pushDrawMode(DrawMode::Faces);
+    }
+    
+    if (vertices == true) {
+      forms[curFormIdx].pushDrawMode(DrawMode::Vertices);
+    }
+    
     // Reset animation to start from the beginning. 
     forms[curFormIdx].model.resetAllAnimations();
   }

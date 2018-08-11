@@ -78,11 +78,11 @@ void Form::draw() {
 void Form::createDynamicParticles() {
   auto meshVertexCount = mesh.getVertices().size();
   // 5 x the actual number of vertices.
-  while(dynamicParticles.size() < meshVertexCount * 5) {
+  while(dynamicParticles.size() < meshVertexCount * 2) {
     for (int i = 0; i < mesh.getVertices().size(); i++) {
       Particle dp;
       dp.currentPosition = mesh.getVertices()[i];
-      dp.velocity = glm::vec3(ofRandom(-0.0005, 0.0001), ofRandom(-0.0003, 0.0003), ofRandom(0.0001, 0.0003));
+      dp.velocity = glm::vec3(ofRandom(-0.0007, 0.0007), ofRandom(-0.0007, 0.0007), ofRandom(0.0007, 0.0007));
       dp.radius = 0.0004;
       dp.color = inPlaceParticles[i].color; // Same color as the fixed particles.
       dynamicParticles.push_back(dp);
