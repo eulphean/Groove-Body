@@ -5,9 +5,9 @@ void Particle::update(float step)
     //calculateNewVelocity();
     currentPosition = currentPosition + velocity;
     life = life - step;
-    angleX += 3;
-    angleY += 3;
-    angleZ += 3;
+    angleX += 2;
+    angleY += 2;
+    angleZ += 2;
 }
 
 void Particle::draw()
