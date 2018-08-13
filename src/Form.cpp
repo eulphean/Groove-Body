@@ -14,8 +14,10 @@ Form::Form(string modelName) {
   // Get the first animated mesh.
   mesh = model.getCurrentAnimatedMesh(0);
   
-  // Create static coins as soon as the form is loaded.
-  createStaticCoins();
+  // Setup material
+  coinMaterial.setSpecularColor(ofFloatColor::greenYellow);
+  coinMaterial.setDiffuseColor(ofFloatColor::gold);
+  coinMaterial.setShininess(15.);
 }
 
 void Form::update() {
@@ -37,13 +39,22 @@ void Form::update() {
   updateFlyingCoins();
 }
 
+void Form::initialize() {
+  createStaticCoins();
+}
+
+void Form::cleanMemory() {
+  staticCoins.clear();
+  flyingCoins.clear();
+}
+
 void Form::createFlyingCoins() {
   auto vertexCount = mesh.getVertices().size();
   while(flyingCoins.size() < vertexCount * 5) {
     for (int i = 0; i < vertexCount; i++) {
       Coin coin;
       auto coinVel = glm::vec3(ofRandom(-0.0007, 0.0007), ofRandom(-0.0007, 0.0007), ofRandom(0.0007, 0.0007));
-      coin.setup(coinVel, mesh.getVertices()[i], 0.0002);
+      coin.setup(coinVel, mesh.getVertices()[i], 0.0005, 0.0002);
       flyingCoins.push_back(coin);
     }
   }
@@ -67,7 +78,7 @@ void Form::createStaticCoins() {
   auto vertices = mesh.getVertices();
   for (int i = 0; i < vertices.size(); i++) {
     Coin coin;
-    coin.setup(glm::vec3(0, 0, 0), vertices[i], 0.0009);
+    coin.setup(glm::vec3(0, 0, 0), vertices[i], 0.0009, 0.0002);
     staticCoins.push_back(coin);
   }
 }
@@ -81,12 +92,16 @@ void Form::drawCoins() {
   
     // Static coins
     for (auto &p: staticCoins) {
+      coinMaterial.begin();
       p.draw();
+      coinMaterial.end();
     }
   
     // Dynamic particles.
     for (auto &dp: flyingCoins) {
+      coinMaterial.begin();
       dp.draw();
+      coinMaterial.end();
     }
   ofPopMatrix();
 }

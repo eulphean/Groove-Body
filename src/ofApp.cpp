@@ -4,6 +4,7 @@
 void ofApp::setup(){
     // Verbose, Notice, Warning, Error, FatalError, Silent
     ofSetLogLevel(OF_LOG_VERBOSE);
+    ofSetVerticalSync(true);
   
     ofSetCylinderResolution(10, 10);
   
@@ -15,10 +16,6 @@ void ofApp::setup(){
     // Setup camera.
     cam.disableMouseInput();
     cameraOrbit = 0;
-  
-    // Setup light.
-    light.setPosition(0, 0, 500);
-    light.setAreaLight(500, 500);
   
     // Setup plane.
     plane.set(1000, 1000);
@@ -32,6 +29,9 @@ void ofApp::setup(){
     gui.add(yCamera);
     gui.add(zCamera);
     gui.add(tiltCamera);
+    gui.add(xLight);
+    gui.add(yLight);
+    gui.add(zLight);
     gui.add(wireframe.setup("Wireframe", false));
     gui.add(faces.setup("Faces", false));
     gui.add(vertices.setup("Vertices", false));
@@ -49,12 +49,23 @@ void ofApp::setup(){
   
     // Set tilt angle.
     cam.tiltDeg(tiltCamera);
+  
+    // Setup light.
+    light.setPosition(xLight, yLight, zLight);
+    light.setDiffuseColor(ofFloatColor::gold);
+    light.setSpecularColor(ofFloatColor::greenYellow);
+  
+    // Initialize the current form
+    forms[curFormIdx].initialize();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
   // Update camera position.
   cam.setPosition(xCamera, yCamera, zCamera);
+  
+  // Update light position
+  light.setPosition(xLight, yLight, zLight);
 
 //  cameraOrbit += ofGetLastFrameTime() * 10.; // 20 degrees per second;
 //  cam.orbitDeg(cameraOrbit, 0., cam.getDistance(), {0., 0., 0.});
@@ -77,20 +88,30 @@ void ofApp::draw(){
     ofDrawBitmapStringHighlight("Dynamic Particle Count: " + ofToString(forms[curFormIdx].getDynamicParticleCount()), 50, 25);
   }
   
-  ofSetColor(255);
+  
+  ofEnableDepthTest();
   cam.begin();
-    ofDrawAxis(5);
-    ofEnableBlendMode(OF_BLENDMODE_ALPHA);
-    ofEnableDepthTest();
+    ofEnableLighting();
     light.enable();
   
     // Draw the model.
     forms[curFormIdx].draw();
   
-    ofDisableDepthTest();
+    // Draw the light
+    if (!hideControls) {
+      ofPushStyle();
+        ofPushMatrix();
+          ofTranslate(light.getPosition());
+          ofSetColor(ofColor::red);
+          ofDrawSphere(0, 0, 0, 1);
+        ofPopMatrix();
+      ofPopStyle();
+    }
+  
     light.disable();
     ofDisableLighting();
   cam.end();
+  ofDisableDepthTest();
 }
 
 void ofApp::exit() {
@@ -100,7 +121,14 @@ void ofApp::exit() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
   if (key == ' ') {
+    // Clean the coin memory from the previous form.
+    forms[curFormIdx].cleanMemory();
+    
+    // Next form.
     curFormIdx = (curFormIdx + 1) % forms.size();
+    
+    // Initialize the form.
+    forms[curFormIdx].initialize();
     
     // Push current draw mode state.
     if (wireframe == true) {

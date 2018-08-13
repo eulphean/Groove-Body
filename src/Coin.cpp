@@ -1,9 +1,10 @@
 #include "Coin.h"
 
-void Coin::setup(glm::vec3 initVelocity, glm::vec3 initPosition, float radius) {
+void Coin::setup(glm::vec3 initVelocity, glm::vec3 initPosition, float radius, float height) {
   currentPosition = initPosition;
   velocity = initVelocity;
   coinRadius = radius;
+  coinHeight = height;
 }
 
 void Coin::update(glm::vec3 newPosition, float step)
@@ -36,7 +37,7 @@ void Coin::draw()
         ofRotateXDeg(angleX);
         ofRotateYDeg(angleY);
         ofRotateZDeg(angleZ);
-        ofDrawCylinder(0, 0, coinRadius, 0.0002);
+        ofDrawCylinder(0, 0, coinRadius, coinHeight);
       ofPopMatrix();
     ofPopStyle();
 }

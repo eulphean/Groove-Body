@@ -24,6 +24,10 @@ class Form {
     void popDrawMode(DrawMode mode);
     int getDynamicParticleCount();
     int getMeshVertexCount();
+  
+    // Important methods. 
+    void initialize();
+    void cleanMemory();
     
     // Expose the model to get and set specific properties
     ofxAssimpModelLoader model;
@@ -36,6 +40,7 @@ class Form {
     // Flying coins.
     vector<Coin> flyingCoins;
     float meshOpacity;
+    ofMaterial coinMaterial;
   
     // Private methods.
     void drawMesh();
