@@ -41,4 +41,6 @@ class Form {
   
     // Emanating particles.
     vector<Particle> dynamicParticles;
+  
+    float meshOpacity; 
 };

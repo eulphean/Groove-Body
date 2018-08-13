@@ -5,6 +5,8 @@ void ofApp::setup(){
     // Verbose, Notice, Warning, Error, FatalError, Silent
     ofSetLogLevel(OF_LOG_VERBOSE);
   
+    ofSetCylinderResolution(10, 10);
+  
     ofBackground(ofColor::black);
   
     // Load all the forms. 

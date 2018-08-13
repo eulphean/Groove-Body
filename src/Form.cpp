@@ -19,6 +19,8 @@ Form::Form(string modelName) {
 }
 
 void Form::update() {
+  meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef()), -1, 1, 10, 100, true);
+  
   // For model animations. 
   model.update();
   mesh = model.getCurrentAnimatedMesh(0);
@@ -38,7 +40,7 @@ void Form::update() {
   auto iter = dynamicParticles.begin();
   while (iter != dynamicParticles.end()) {
     if (iter -> life > 0) {
-      float step = ofGetLastFrameTime()/ofRandom(1,5);
+      float step = ofGetLastFrameTime()/ofRandom(5,10);
       iter -> update(step);
       iter++;
     } else {
@@ -56,7 +58,11 @@ void Form::draw() {
       }
       
       case DrawMode::Wireframe: {
-        drawMesh();
+        ofPushStyle();
+          ofColor c = ofColor(ofColor::goldenRod, meshOpacity);
+          ofSetColor(c);
+          drawMesh();
+        ofPopStyle();
         break;
       }
       
@@ -78,12 +84,12 @@ void Form::draw() {
 void Form::createDynamicParticles() {
   auto meshVertexCount = mesh.getVertices().size();
   // 5 x the actual number of vertices.
-  while(dynamicParticles.size() < meshVertexCount * 2) {
+  while(dynamicParticles.size() < meshVertexCount * 3) {
     for (int i = 0; i < mesh.getVertices().size(); i++) {
       Particle dp;
       dp.currentPosition = mesh.getVertices()[i];
       dp.velocity = glm::vec3(ofRandom(-0.0007, 0.0007), ofRandom(-0.0007, 0.0007), ofRandom(0.0007, 0.0007));
-      dp.radius = 0.0004;
+      dp.radius = 0.0002;
       dp.color = inPlaceParticles[i].color; // Same color as the fixed particles.
       dynamicParticles.push_back(dp);
     }

@@ -14,4 +14,8 @@ class Particle
     float radius = 0.0;
     float velocityConstant = 0.001;
     ofColor color;
+  
+    float angleX = ofRandom(0, 360);
+    float angleY = ofRandom(0, 360);
+    float angleZ = ofRandom(0, 360);
 };

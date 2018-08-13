@@ -5,6 +5,9 @@ void Particle::update(float step)
     //calculateNewVelocity();
     currentPosition = currentPosition + velocity;
     life = life - step;
+    angleX += 3;
+    angleY += 3;
+    angleZ += 3;
 }
 
 void Particle::draw()
@@ -13,10 +16,13 @@ void Particle::draw()
     ofPushStyle();
       //Change the brightness of the particles with time.
       auto opacity = ofMap(life, 1, 0, 255, 0, true);
-      ofSetColor(color, opacity);
+      ofSetColor(ofColor::gold, opacity);
       ofPushMatrix();
         ofTranslate(currentPosition);
-        ofDrawSphere(0, 0, radius);
+        ofRotateXDeg(angleX);
+        ofRotateYDeg(angleY);
+        ofRotateZDeg(angleZ);
+        ofDrawCylinder(0, 0, 0.0009, 0.0002);
       ofPopMatrix();
     ofPopStyle();
 }
