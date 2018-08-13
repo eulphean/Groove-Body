@@ -1,8 +1,18 @@
-#include "Particle.h"
+#include "Coin.h"
 
-void Particle::update(float step)
+void Coin::setup(glm::vec3 initVelocity, glm::vec3 initPosition, float radius) {
+  currentPosition = initPosition;
+  velocity = initVelocity;
+  coinRadius = radius;
+}
+
+void Coin::update(glm::vec3 newPosition, float step)
 {
-    //calculateNewVelocity();
+    currentPosition = newPosition;
+    update(step);
+}
+
+void Coin::update(float step) {
     currentPosition = currentPosition + velocity;
     life = life - step;
     angleX += 2;
@@ -10,7 +20,11 @@ void Particle::update(float step)
     angleZ += 2;
 }
 
-void Particle::draw()
+float Coin::getLife() {
+  return life;
+}
+
+void Coin::draw()
 {
     ofFill();
     ofPushStyle();
@@ -22,7 +36,7 @@ void Particle::draw()
         ofRotateXDeg(angleX);
         ofRotateYDeg(angleY);
         ofRotateZDeg(angleZ);
-        ofDrawCylinder(0, 0, 0.0009, 0.0002);
+        ofDrawCylinder(0, 0, coinRadius, 0.0002);
       ofPopMatrix();
     ofPopStyle();
 }

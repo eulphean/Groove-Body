@@ -14,39 +14,113 @@ Form::Form(string modelName) {
   // Get the first animated mesh.
   mesh = model.getCurrentAnimatedMesh(0);
   
-  // Create inPlaceParticles.
-  createInPlaceParticles();
+  // Create static coins as soon as the form is loaded.
+  createStaticCoins();
 }
 
 void Form::update() {
+  // Opacity of the model mesh.
   meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef()), -1, 1, 10, 100, true);
   
-  // For model animations. 
+  // Update model animation.
   model.update();
   mesh = model.getCurrentAnimatedMesh(0);
   
-  // Update inPlaceParticle positions.
-  auto meshVertices = mesh.getVertices();
-  for (int i = 0; i < meshVertices.size(); i++) {
-    inPlaceParticles[i].currentPosition = meshVertices[i];
-    inPlaceParticles[i].update(0);
+  // Update static coins life.
+  auto vertices = mesh.getVertices();
+  for (int i = 0; i < vertices.size(); i++) {
+    staticCoins[i].update(vertices[i], 0);
   }
   
-  // Dynamic/flying particles
-  // Set a maximum number of particles probably.
-  createDynamicParticles();
-  
-  // Update dynamic particles and remove them if their life has ended.
-  auto iter = dynamicParticles.begin();
-  while (iter != dynamicParticles.end()) {
-    if (iter -> life > 0) {
-      float step = ofGetLastFrameTime()/ofRandom(5,10);
+  // Create flying coins and update their life.
+  createFlyingCoins();
+  updateFlyingCoins();
+}
+
+void Form::createFlyingCoins() {
+  auto vertexCount = mesh.getVertices().size();
+  while(flyingCoins.size() < vertexCount * 5) {
+    for (int i = 0; i < vertexCount; i++) {
+      Coin coin;
+      auto coinVel = glm::vec3(ofRandom(-0.0007, 0.0007), ofRandom(-0.0007, 0.0007), ofRandom(0.0007, 0.0007));
+      coin.setup(coinVel, mesh.getVertices()[i], 0.0002);
+      flyingCoins.push_back(coin);
+    }
+  }
+}
+
+void Form::updateFlyingCoins() {
+  auto iter = flyingCoins.begin();
+  while (iter != flyingCoins.end()) {
+    if (iter -> getLife() > 0) {
+      float step = ofGetLastFrameTime() / ofRandom(5,10);
       iter -> update(step);
       iter++;
     } else {
-      iter = dynamicParticles.erase(iter);
+      iter = flyingCoins.erase(iter);
     }
   }
+}
+
+void Form::createStaticCoins() {
+  staticCoins.clear();
+  auto vertices = mesh.getVertices();
+  for (int i = 0; i < vertices.size(); i++) {
+    Coin coin;
+    coin.setup(glm::vec3(0, 0, 0), vertices[i], 0.0009);
+    staticCoins.push_back(coin);
+  }
+}
+
+void Form::drawCoins() {
+  ofPushMatrix();
+    // Matrix transformations
+    ofxAssimpMeshHelper &meshHelper = model.getMeshHelper(0);
+    ofMultMatrix(model.getModelMatrix());
+    ofMultMatrix(meshHelper.matrix);
+  
+    // Static coins
+    for (auto &p: staticCoins) {
+      p.draw();
+    }
+  
+    // Dynamic particles.
+    for (auto &dp: flyingCoins) {
+      dp.draw();
+    }
+  ofPopMatrix();
+}
+
+// Draw openFrameworks mesh.
+void Form::drawMesh() {
+  // Draw model mesh.
+  ofPushMatrix();
+    ofxAssimpMeshHelper & meshHelper = model.getMeshHelper(0);
+    ofMultMatrix(model.getModelMatrix());
+    ofMultMatrix(meshHelper.matrix);
+    mesh.drawWireframe();
+  ofPopMatrix();
+}
+
+void Form::pushDrawMode(DrawMode mode) {
+  drawModes.push_back(mode);
+}
+
+void Form::popDrawMode(DrawMode mode) {
+  if (drawModes.size() != 0) {
+    auto idx = ofFind(drawModes, mode);
+    if (idx >= 0 && idx <= drawModes.size()-1) {
+      drawModes.erase(drawModes.begin() + idx);
+    }
+  }
+}
+
+int Form::getDynamicParticleCount() {
+  return flyingCoins.size();
+}
+
+int Form::getMeshVertexCount() {
+  return mesh.getVertices().size();
 }
 
 void Form::draw() {
@@ -72,102 +146,11 @@ void Form::draw() {
       }
       
       case DrawMode::Particles: {
-        drawParticles();
+        drawCoins();
       }
       
       default:
         break;
     }
   }
-}
-
-void Form::createDynamicParticles() {
-  auto meshVertexCount = mesh.getVertices().size();
-  // 5 x the actual number of vertices.
-  while(dynamicParticles.size() < meshVertexCount * 3) {
-    for (int i = 0; i < mesh.getVertices().size(); i++) {
-      Particle dp;
-      dp.currentPosition = mesh.getVertices()[i];
-      dp.velocity = glm::vec3(ofRandom(-0.0007, 0.0007), ofRandom(-0.0007, 0.0007), ofRandom(0.0007, 0.0007));
-      dp.radius = 0.0002;
-      dp.color = inPlaceParticles[i].color; // Same color as the fixed particles.
-      dynamicParticles.push_back(dp);
-    }
-  }
-}
-
-void Form::createInPlaceParticles() {
-  inPlaceParticles.clear();
-  for (int i = 0; i < mesh.getVertices().size(); i++) {
-    Particle p;
-    p.currentPosition = mesh.getVertices()[i];
-    p.velocity = glm::vec3(0, 0, 0);
-    p.radius = 0.001;
-    
-    auto num = ofRandom(1, 10);
-    if (num <= 5) {
-      p.color = ofColor::red;
-    } else {
-      p.color = ofColor::green;
-    }
- 
-
-    // Add a copy to our inPlaceParticles vector.
-    inPlaceParticles.push_back(p);
-  }
-}
-
-void Form::drawParticles() {
-  // Draw the inPlaceParticles.
-  ofPushMatrix();
-    ofxAssimpMeshHelper &meshHelper = model.getMeshHelper(0);
-    ofMultMatrix(model.getModelMatrix());
-    ofMultMatrix(meshHelper.matrix);
-  
-    // In-place particles.
-    for (auto &p: inPlaceParticles) {
-      p.draw();
-    }
-  
-    // Dynamic particles.
-    for (auto &dp: dynamicParticles) {
-      dp.draw();
-    }
-  ofPopMatrix();
-}
-
-// Draw openFrameworks mesh.
-void Form::drawMesh() {
-  #ifndef TARGET_PROGRAMMABLE_GL
-  glEnable(GL_NORMALIZE);
-  #endif
-
-  // Draw model mesh.
-  ofPushMatrix();
-    ofxAssimpMeshHelper & meshHelper = model.getMeshHelper(0);
-    ofMultMatrix(model.getModelMatrix());
-    ofMultMatrix(meshHelper.matrix);
-    mesh.drawWireframe();
-  ofPopMatrix();
-}
-
-void Form::pushDrawMode(DrawMode mode) {
-  drawModes.push_back(mode);
-}
-
-void Form::popDrawMode(DrawMode mode) {
-  if (drawModes.size() != 0) {
-    auto idx = ofFind(drawModes, mode);
-    if (idx >= 0 && idx <= drawModes.size()-1) {
-      drawModes.erase(drawModes.begin() + idx);
-    }
-  }
-}
-
-int Form::getDynamicParticleCount() {
-  return dynamicParticles.size();
-}
-
-int Form::getMeshVertexCount() {
-  return mesh.getVertices().size();
 }

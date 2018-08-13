@@ -2,7 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
-#include "Particle.h"
+#include "Coin.h"
 #include "ofxGui.h"
 
 enum DrawMode {
@@ -19,13 +19,9 @@ class Form {
     void update();
     void draw();
   
-    // Helpers
-    void drawMesh();
+    // Pubic methods.
     void pushDrawMode(DrawMode mode);
     void popDrawMode(DrawMode mode);
-    void createInPlaceParticles();
-    void createDynamicParticles();
-    void drawParticles();
     int getDynamicParticleCount();
     int getMeshVertexCount();
     
@@ -33,14 +29,18 @@ class Form {
     ofxAssimpModelLoader model;
     
   private:
-    ofMesh mesh; // of mesh for the model.
-    vector<DrawMode> drawModes; 
+    ofMesh mesh;
+    vector<DrawMode> drawModes;
+    // Fixed coins that make up the body.
+    vector<Coin> staticCoins;
+    // Flying coins.
+    vector<Coin> flyingCoins;
+    float meshOpacity;
   
-    // Fixed particles around the body.
-    vector<Particle> inPlaceParticles;
-  
-    // Emanating particles.
-    vector<Particle> dynamicParticles;
-  
-    float meshOpacity; 
+    // Private methods.
+    void drawMesh();
+    void drawCoins();
+    void createStaticCoins();
+    void createFlyingCoins();
+    void updateFlyingCoins();
 };
