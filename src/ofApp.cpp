@@ -88,7 +88,6 @@ void ofApp::draw(){
     ofDrawBitmapStringHighlight("Dynamic Particle Count: " + ofToString(forms[curFormIdx].getDynamicParticleCount()), 50, 25);
   }
   
-  
   ofEnableDepthTest();
   cam.begin();
     ofEnableLighting();

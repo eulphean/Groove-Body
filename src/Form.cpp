@@ -22,7 +22,7 @@ Form::Form(string modelName) {
 
 void Form::update() {
   // Opacity of the model mesh.
-  meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef()), -1, 1, 10, 100, true);
+  meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef()), -1, 1, 10, 150, true);
   
   // Update model animation.
   model.update();
@@ -54,7 +54,7 @@ void Form::createFlyingCoins() {
     for (int i = 0; i < vertexCount; i++) {
       Coin coin;
       auto coinVel = glm::vec3(ofRandom(-0.0007, 0.0007), ofRandom(-0.0007, 0.0007), ofRandom(0.0007, 0.0007));
-      coin.setup(coinVel, mesh.getVertices()[i], 0.0005, 0.0002);
+      coin.setup(coinVel, mesh.getVertices()[i], 0.0005, 0.0001);
       flyingCoins.push_back(coin);
     }
   }
@@ -90,18 +90,22 @@ void Form::drawCoins() {
     ofMultMatrix(model.getModelMatrix());
     ofMultMatrix(meshHelper.matrix);
   
-    // Static coins
+    // Static coins.
     for (auto &p: staticCoins) {
+      ofEnableBlendMode(OF_BLENDMODE_SCREEN);
       coinMaterial.begin();
       p.draw();
       coinMaterial.end();
+      ofDisableBlendMode();
     }
   
-    // Dynamic particles.
+    // Flying coins.
     for (auto &dp: flyingCoins) {
+      ofEnableBlendMode(OF_BLENDMODE_ADD);
       coinMaterial.begin();
       dp.draw();
       coinMaterial.end();
+      ofDisableBlendMode();
     }
   ofPopMatrix();
 }
@@ -147,11 +151,13 @@ void Form::draw() {
       }
       
       case DrawMode::Wireframe: {
+        ofEnableBlendMode(OF_BLENDMODE_ALPHA);
         ofPushStyle();
           ofColor c = ofColor(ofColor::goldenRod, meshOpacity);
           ofSetColor(c);
           drawMesh();
         ofPopStyle();
+        ofDisableBlendMode();
         break;
       }
       
