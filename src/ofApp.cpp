@@ -8,7 +8,8 @@ void ofApp::setup(){
   
     ofSetCylinderResolution(10, 10);
   
-    ofBackground(ofColor::black);
+    ofColor backgroundColor = ofColor(9, 10, 11);
+    ofBackground(backgroundColor);
   
     // Load all the forms. 
     loadForms();
