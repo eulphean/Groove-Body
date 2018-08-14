@@ -46,6 +46,7 @@ void Form::initialize() {
 void Form::cleanMemory() {
   staticCoins.clear();
   flyingCoins.clear();
+  drawModes.clear();
 }
 
 void Form::createFlyingCoins() {

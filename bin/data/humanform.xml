@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <group>
-	<x:_camera>-100</x:_camera>
+	<x:_camera>0</x:_camera>
 	<y:_camera>350</y:_camera>
-	<z:_camera>850</z:_camera>
+	<z:_camera>950</z:_camera>
 	<tilt:_camera>0</tilt:_camera>
 	<Wireframe>1</Wireframe>
 	<Faces>0</Faces>
