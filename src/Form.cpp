@@ -16,7 +16,7 @@ Form::Form(string modelName) {
   
   // Setup material
   coinMaterial.setSpecularColor(ofFloatColor::greenYellow);
-  coinMaterial.setDiffuseColor(ofFloatColor::gold);
+  coinMaterial.setDiffuseColor(ofFloatColor::goldenRod);
   coinMaterial.setShininess(15.);
 }
 
@@ -54,8 +54,8 @@ void Form::createFlyingCoins() {
   while(flyingCoins.size() < vertexCount * 5) {
     for (int i = 0; i < vertexCount; i++) {
       Coin coin;
-      auto coinVel = glm::vec3(ofRandom(-0.0007, 0.0007), ofRandom(-0.0007, 0.0007), ofRandom(0.0007, 0.0007));
-      coin.setup(coinVel, mesh.getVertices()[i], 0.0005, 0.0001);
+      auto coinVel = glm::vec3(ofRandom(-0.0005, 0.0005), ofRandom(-0.0003, 0.0005), ofRandom(0.0007, 0.001));
+      coin.setup(coinVel, mesh.getVertices()[i], 0.0004, 0.0001);
       flyingCoins.push_back(coin);
     }
   }
@@ -65,7 +65,7 @@ void Form::updateFlyingCoins() {
   auto iter = flyingCoins.begin();
   while (iter != flyingCoins.end()) {
     if (iter -> getLife() > 0) {
-      float step = ofGetLastFrameTime() / ofRandom(5,10);
+      float step = ofGetLastFrameTime() / ofRandom(10,15);
       iter -> update(step);
       iter++;
     } else {
