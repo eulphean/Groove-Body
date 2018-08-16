@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <group>
 	<x:_camera>0</x:_camera>
-	<y:_camera>700</y:_camera>
-	<z:_camera>700</z:_camera>
+	<y:_camera>550</y:_camera>
+	<z:_camera>1450</z:_camera>
 	<tilt:_camera>0</tilt:_camera>
-	<Wireframe>0</Wireframe>
+	<Wireframe>1</Wireframe>
 	<Faces>0</Faces>
 	<Vertices>0</Vertices>
 	<Particles>1</Particles>

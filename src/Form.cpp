@@ -26,7 +26,7 @@ void Form::setup(string modelPath) {
 
 void Form::deallocate() {
   // Reset concat matrix to an identity matrix where nothing
-  // is transformed at all. 
+  // is transformed at all.
   concatMatrix.makeIdentityMatrix();
   
   // Unload shader.
@@ -50,7 +50,7 @@ void Form::deallocate() {
 
 void Form::update() {
   // Opacity of the model mesh.
-  meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef()), -1, 1, 10, 150, true);
+  meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef()), -1, 1, 0, 100, true);
   
   // Update model animation.
   model.update();
@@ -73,8 +73,14 @@ void Form::draw() {
       
       case DrawMode::Wireframe: {
         ofEnableBlendMode(OF_BLENDMODE_ALPHA);
-        ofSetColor(ofColor(ofColor::goldenRod, 0));
-        model.drawWireframe();
+        ofPushStyle();
+          auto c = ofColor(ofColor::darkGoldenRod, meshOpacity);
+          ofSetColor(c);
+          ofPushMatrix();
+            ofMultMatrix(concatMatrix);
+            humanMesh.drawWireframe();
+          ofPopMatrix();
+        ofPopStyle();
         ofDisableBlendMode();
         break;
       }
@@ -120,7 +126,7 @@ void Form::setupShaderBuffer() {
 
   // Set the geometry which will be drawn as an instance drawing.
   ofCylinderPrimitive cylinder;
-  cylinder.set(4, 1);
+  cylinder.set(5, 1);
   cylinder.setResolution(15, 10);
   cylinder.setCylinderColor(ofColor::darkGoldenRod);
   cylinder.setTopCapColor(ofColor::gold);

@@ -16,6 +16,7 @@ void ofApp::setup(){
 
     // Setup camera.
     cam.disableMouseInput();
+    cam.setFarClip(15000);
     cameraOrbit = 0;
   
     // Setup plane.
