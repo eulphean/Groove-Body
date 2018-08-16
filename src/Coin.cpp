@@ -31,7 +31,7 @@ void Coin::draw()
     ofPushStyle();
       //Change the brightness of the particles with time.
       auto opacity = ofMap(life, 1, 0, 255, 0, true);
-      ofSetColor(ofColor::gold, opacity);
+      ofSetColor(ofColor::gold, 255);
       ofPushMatrix();
         ofTranslate(currentPosition);
         ofRotateXDeg(angleX);
