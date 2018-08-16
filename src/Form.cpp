@@ -39,9 +39,12 @@ void Form::deallocate() {
   for (int i = 0; i < staticCoins.size(); i++) {
     delete staticCoins[i];
   }
+  
+//  for (int i = 0; i < flyingCoins.size(); i++) {
+//    delete flyingCoins[i];
+//  }
 
   staticCoins.clear();
-  
   flyingCoins.clear();
   
   // Clear all draw modes.
@@ -59,8 +62,8 @@ void Form::update() {
   updateStaticCoins();
   
   // Create flying coins and update their life.
-  //createFlyingCoins();
-  //updateFlyingCoins();
+  createFlyingCoins();
+  updateFlyingCoins();
 }
 
 void Form::draw() {
@@ -105,6 +108,9 @@ void Form::draw() {
 }
 
 void Form::setupShaderBuffer() {
+  // Max coins are 15 x totalVertices
+  maxCoins = humanMesh.getVertices().size() * 12;
+  
   // Max number of coin transformations this matrix will hold.
   // This is static + flying coins.
   coinMatrices.resize(maxCoins);
@@ -164,11 +170,35 @@ void Form::updateStaticCoins() {
 }
 
 void Form::createFlyingCoins() {
-  
+  // Only executes once and populates the flyingCoins vector.
+  while (flyingCoins.size() < maxCoins - staticCoins.size()) {
+    for (int i = 0; i < staticCoins.size(); i++) {
+      Coin *c = new Coin;
+      c->setPosition(staticCoins[i]->getPosition());
+      c->velocity = glm::vec3(ofRandom(-4, 4), ofRandom(-4, 4), ofRandom(0, 6));
+      flyingCoins.push_back(c);
+    }
+  }
 }
 
 void Form::updateFlyingCoins() {
+  for (int i = 0; i < flyingCoins.size(); i++) {
+    // Update the coin.
+    flyingCoins[i]->update(ofGetLastFrameTime()/ofRandom(1, 150));
+    if (!flyingCoins[i] -> isAlive()) {
+      // Update coin at a position.
+      int idxForPos = i % staticCoins.size();
+      flyingCoins[i]->setPosition(staticCoins[idxForPos]->getPosition());
+      flyingCoins[i]->velocity = glm::vec3(ofRandom(-2, 2), ofRandom(-2, 2), ofRandom(0, 2));
+      flyingCoins[i]->life = 1.0;
+    }
+    
+    // Update coinMatrix with the transformation matrix for flying coins.
+    coinMatrices[staticCoins.size() + i] = flyingCoins[i]->getLocalTransformMatrix();
+  }
   
+  // Update buffer with flying coins matrices.
+  buffer.updateData(0, coinMatrices);
 }
 
 void Form::pushDrawMode(DrawMode mode) {

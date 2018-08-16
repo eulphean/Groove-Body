@@ -56,5 +56,5 @@ class Form {
     void createFlyingCoins();
     void updateFlyingCoins();
   
-    const int maxCoins = 15000; // Static + Dynamic coins. 
+    int maxCoins; // Static + Dynamic coins. 
 };
