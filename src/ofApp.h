@@ -20,8 +20,9 @@ class ofApp : public ofBaseApp{
   
   private:
     // All the models.
-    vector<Form> forms;
-    int curFormIdx = 0;
+    Form currentForm;
+    int formPathIdx = 0;
+    vector<string> formPaths;
   
     // Light
     ofLight	light;

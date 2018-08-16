@@ -1,11 +1,6 @@
 #include "Form.h"
 
-Form::Form(string modelName) {
-  // Keep the path to initialize the form later. 
-  modelPath = modelName;
-}
-
-void Form::setup() {
+void Form::setup(string modelPath) {
   // Load our model and set it up for animations.
   model.loadModel(modelPath, false);
   model.setPosition(0, 0, 0);

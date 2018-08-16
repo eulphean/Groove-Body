@@ -14,8 +14,6 @@ enum DrawMode {
 
 class Form {
   public:
-    // Constructor
-    Form(string model);
     void update();
     void draw();
   
@@ -26,7 +24,7 @@ class Form {
     int getMeshVertexCount();
   
     // Important methods. 
-    void setup();
+    void setup(string modelPath);
     void deallocate();
     
     // Expose the model to get and set specific properties

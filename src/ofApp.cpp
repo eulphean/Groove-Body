@@ -57,7 +57,7 @@ void ofApp::setup(){
     light.setSpecularColor(ofFloatColor::greenYellow);
   
     // Initialize the current form
-    forms[curFormIdx].setup();
+    currentForm.setup(formPaths[formPathIdx]);
 }
 
 //--------------------------------------------------------------
@@ -68,13 +68,8 @@ void ofApp::update(){
   // Update light position
   light.setPosition(xLight, yLight, zLight);
 
-//  cameraOrbit += ofGetLastFrameTime() * 10.; // 20 degrees per second;
-//  cam.orbitDeg(cameraOrbit, 0., cam.getDistance(), {0., 0., 0.});
-//  glm::vec3 formCenter = forms[curFormIdx].model.getSceneCenter();
-//  cam.orbitDeg(cameraOrbit, 0., glm::distance(cam.getPosition(), formCenter), formCenter);
-
   // Update the form for animation.
-  forms[curFormIdx].update();
+  currentForm.update();
 }
 
 //--------------------------------------------------------------
@@ -83,9 +78,9 @@ void ofApp::draw(){
   if (!hideControls) {
     gui.draw();
     // Debug text
-    ofDrawBitmapStringHighlight("Vertices: " +  ofToString(forms[curFormIdx].getMeshVertexCount()),50, 10);
+    ofDrawBitmapStringHighlight("Vertices: " +  ofToString(currentForm.getMeshVertexCount()),50, 10);
     ofDrawBitmapStringHighlight("Frame Rate: " + ofToString(ofGetFrameRate()), 50, 40);
-    ofDrawBitmapStringHighlight("Dynamic Particle Count: " + ofToString(forms[curFormIdx].getDynamicParticleCount()), 50, 25);
+    ofDrawBitmapStringHighlight("Dynamic Particle Count: " + ofToString(currentForm.getDynamicParticleCount()), 50, 25);
   }
   
   ofEnableDepthTest();
@@ -94,7 +89,7 @@ void ofApp::draw(){
     light.enable();
   
     // Draw the model.
-    forms[curFormIdx].draw();
+    currentForm.draw();
   
     light.disable();
     ofDisableLighting();
@@ -109,34 +104,34 @@ void ofApp::exit() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
   if (key == ' ') {
-    // Clean the coin memory from the previous form.
-    forms[curFormIdx].deallocate();
+    // Deallocate the current form completely.
+    currentForm.deallocate();
     
     // Next form.
-    curFormIdx = (curFormIdx + 1) % forms.size();
+    formPathIdx = (formPathIdx + 1) % formPaths.size();
     
-    // Initialize the form.
-    forms[curFormIdx].setup();
+    // Initialize the current form with new model.
+    currentForm.setup(formPaths[formPathIdx]);
     
     // Push current draw mode state.
     if (wireframe == true) {
-      forms[curFormIdx].pushDrawMode(DrawMode::Wireframe);
+      currentForm.pushDrawMode(DrawMode::Wireframe);
     }
     
     if (particles == true) {
-      forms[curFormIdx].pushDrawMode(DrawMode::Particles);
+      currentForm.pushDrawMode(DrawMode::Particles);
     }
     
     if (faces == true) {
-      forms[curFormIdx].pushDrawMode(DrawMode::Faces);
+      currentForm.pushDrawMode(DrawMode::Faces);
     }
     
     if (vertices == true) {
-      forms[curFormIdx].pushDrawMode(DrawMode::Vertices);
+      currentForm.pushDrawMode(DrawMode::Vertices);
     }
     
     // Reset animation to start from the beginning. 
-    forms[curFormIdx].model.resetAllAnimations();
+    currentForm.model.resetAllAnimations();
   }
   
   if (key == 'h') {
@@ -151,8 +146,7 @@ void ofApp::loadForms() {
   dir.listDir();
   for (int i = 0; i < dir.size(); i++) {
     string filePath = dir.getPath(i);
-    Form form(filePath); // Create a form.
-    forms.push_back(form);
+    formPaths.push_back(filePath);
   }
   
   ofLogNotice() << "Success: All the dae animations loaded." << "\n";
@@ -165,32 +159,32 @@ void ofApp::cameraTiltCallback(float &angle) {
 
 void ofApp::wireframeCallback(bool &value) {
   if (value) {
-    forms[curFormIdx].pushDrawMode(DrawMode::Wireframe);
+    currentForm.pushDrawMode(DrawMode::Wireframe);
   } else {
-    forms[curFormIdx].popDrawMode(DrawMode::Wireframe);
+    currentForm.popDrawMode(DrawMode::Wireframe);
   }
 }
 
 void ofApp::facesCallback(bool &value) {
   if (value) {
-    forms[curFormIdx].pushDrawMode(DrawMode::Faces);
+    currentForm.pushDrawMode(DrawMode::Faces);
   } else {
-    forms[curFormIdx].popDrawMode(DrawMode::Faces);
+    currentForm.popDrawMode(DrawMode::Faces);
   }
 }
 
 void ofApp::verticesCallback(bool &value) {
   if (value) {
-    forms[curFormIdx].pushDrawMode(DrawMode::Vertices);
+    currentForm.pushDrawMode(DrawMode::Vertices);
   } else {
-    forms[curFormIdx].popDrawMode(DrawMode::Vertices);
+    currentForm.popDrawMode(DrawMode::Vertices);
   }
 }
 
 void ofApp::particlesCallback(bool &value) {
   if (value) {
-    forms[curFormIdx].pushDrawMode(DrawMode::Particles);
+    currentForm.pushDrawMode(DrawMode::Particles);
   } else {
-    forms[curFormIdx].popDrawMode(DrawMode::Particles);
+    currentForm.popDrawMode(DrawMode::Particles);
   }
 }
