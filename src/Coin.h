@@ -2,24 +2,21 @@
 
 #include "ofMain.h"
 
-class Coin
-{
+class Coin : public ofNode {
   public:
-    void setup(glm::vec3 initVelocity, glm::vec3 currentPos, float coinRadius, float coinHeight);
-    void update(float step);
-    void update(glm::vec3 newPosition, float step);
-    void draw();
-    float getLife();
+    void update(float step) {
+      this->setPosition(this->getPosition() + velocity);
+      this->rotate(rotation, 1.0, 0, 0.0); // Constant rotation.
+      this->rotate(rotation, 0.0, 1.0, 0.0); // Constant rotation.
+      this->rotate(rotation, 0.0, 0, 1.0); // Constant rotation.
+      life = life - step;
+    }
   
-  private:
+    bool isAlive() {
+      return life >= 0.0;
+    }
+  
     glm::vec3 velocity;
-    glm::vec3 currentPosition;
-    float coinRadius = 0.0;
-    float coinHeight = 0.0;
-  
-    float angleX = ofRandom(0, 360);
-    float angleY = ofRandom(0, 360);
-    float angleZ = ofRandom(0, 360);
-  
-    float life = 1.0f;
+    float life = 1.0;
+    float rotation = ofRandom(0, 3);
 };

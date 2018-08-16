@@ -10,19 +10,38 @@ void Form::setup(string modelPath) {
   model.setPausedForAllAnimations(false);
   model.playAllAnimations();
   
+  // Calculate concat matrix.
+  concatMatrix.preMult(model.getModelMatrix());
+  concatMatrix.preMult(model.getMeshHelper(0).matrix);
+  
   // Get the first animated mesh.
-  mesh = model.getCurrentAnimatedMesh(0);
+  humanMesh = model.getCurrentAnimatedMesh(0);
+  
+  // Setup shader.
+  setupShaderBuffer();
   
   // Create static coins.
   createStaticCoins();
 }
 
 void Form::deallocate() {
-  // Deallocate the model. 
-  model.clear();
+  // Reset concat matrix to an identity matrix where nothing
+  // is transformed at all. 
+  concatMatrix.makeIdentityMatrix();
+  
+  // Unload shader.
+  shader.unload();
+  
+  // Clear matrices
+  coinMatrices.clear();
   
   // Delete the coin containers.
+  for (int i = 0; i < staticCoins.size(); i++) {
+    delete staticCoins[i];
+  }
+
   staticCoins.clear();
+  
   flyingCoins.clear();
   
   // Clear all draw modes.
@@ -35,90 +54,115 @@ void Form::update() {
   
   // Update model animation.
   model.update();
-  mesh = model.getCurrentAnimatedMesh(0);
+  humanMesh = model.getCurrentAnimatedMesh(0);
   
-  // Update static coins life.
-  auto vertices = mesh.getVertices();
-  for (int i = 0; i < vertices.size(); i++) {
-    staticCoins[i].update(vertices[i], 0);
-  }
+  updateStaticCoins();
   
   // Create flying coins and update their life.
-  createFlyingCoins();
-  updateFlyingCoins();
+  //createFlyingCoins();
+  //updateFlyingCoins();
 }
 
-void Form::createFlyingCoins() {
-  auto vertexCount = mesh.getVertices().size();
-  while(flyingCoins.size() < vertexCount * 5) {
-    for (int i = 0; i < vertexCount; i++) {
-      Coin coin;
-      auto coinVel = glm::vec3(ofRandom(-0.0005, 0.0005), ofRandom(-0.0003, 0.0005), ofRandom(0.0007, 0.001));
-      coin.setup(coinVel, mesh.getVertices()[i], 0.0004, 0.0001);
-      flyingCoins.push_back(coin);
+void Form::draw() {
+  for (auto mode: drawModes) {
+    switch (mode) {
+      case DrawMode::Faces: {
+        model.drawFaces();
+        break;
+      }
+      
+      case DrawMode::Wireframe: {
+        ofEnableBlendMode(OF_BLENDMODE_ALPHA);
+        ofSetColor(ofColor(ofColor::goldenRod, 0));
+        model.drawWireframe();
+        ofDisableBlendMode();
+        break;
+      }
+      
+      case DrawMode::Vertices: {
+        model.drawVertices();
+        break;
+      }
+      
+      case DrawMode::Particles: {
+        if (staticCoins.size() > 0 || flyingCoins.size() > 0) {
+          shader.begin();
+            cylinderMesh.drawInstanced(OF_MESH_FILL, coinMatrices.size());
+          shader.end();
+        }
+      }
+      
+      default:
+        break;
     }
   }
 }
 
-void Form::updateFlyingCoins() {
-  auto iter = flyingCoins.begin();
-  while (iter != flyingCoins.end()) {
-    if (iter -> getLife() > 0) {
-      float step = ofGetLastFrameTime() / ofRandom(10,15);
-      iter -> update(step);
-      iter++;
-    } else {
-      iter = flyingCoins.erase(iter);
-    }
-  }
+void Form::setupShaderBuffer() {
+  // Max number of coin transformations this matrix will hold.
+  // This is static + flying coins.
+  coinMatrices.resize(maxCoins);
+  
+  // Allocate buffer.
+  buffer.allocate();
+  buffer.bind(GL_TEXTURE_BUFFER);
+  buffer.setData(coinMatrices,GL_STREAM_DRAW);
+
+  // Allocate as buffer texture. GL_RGBA32F allows us to get
+  // each row of the matrix as a vec4.
+  tex.allocateAsBufferTexture(buffer,GL_RGBA32F);
+
+  // Set texture uniform in the shader. 
+  shader.load("vert.glsl","frag.glsl");
+  shader.begin();
+  shader.setUniformTexture("tex",tex,0);
+  shader.end();
+
+  // Set the geometry which will be drawn as an instance drawing.
+  ofCylinderPrimitive cylinder;
+  cylinder.set(4, 1);
+  cylinder.setResolution(15, 10);
+  cylinder.setCylinderColor(ofColor::darkGoldenRod);
+  cylinder.setTopCapColor(ofColor::gold);
+  cylinder.setBottomCapColor(ofColor::gold);
+  cylinderMesh = cylinder.getMesh();
+  cylinderMesh.setUsage(GL_STATIC_DRAW);
 }
 
 void Form::createStaticCoins() {
-  staticCoins.clear();
-  auto vertices = mesh.getVertices();
+  // Create a coin at every vertex.
+  auto vertices = humanMesh.getVertices();
   for (int i = 0; i < vertices.size(); i++) {
-    Coin coin;
-    coin.setup(glm::vec3(0, 0, 0), vertices[i], 0.0009, 0.0002);
-    staticCoins.push_back(coin);
+    Coin *c = new Coin;
+    auto position = concatMatrix.preMult((ofVec3f) vertices[i]);
+    c->setPosition(position); // position.
+    c->velocity = glm::vec3(0, 0, 0); // static.
+    staticCoins.push_back(c);
   }
 }
 
-void Form::drawCoins() {
-  ofPushMatrix();
-    // Matrix transformations
-    ofxAssimpMeshHelper &meshHelper = model.getMeshHelper(0);
-    ofMultMatrix(model.getModelMatrix());
-    ofMultMatrix(meshHelper.matrix);
+void Form::updateStaticCoins() {
+  auto vertices = humanMesh.getVertices();
+  for (int i = 0; i < vertices.size(); i++) {
+    // Animated position.
+    auto position = concatMatrix.preMult((ofVec3f) vertices[i]);
+    
+    staticCoins[i]->setPosition(position);
+    staticCoins[i]->update(0); // Call update for rotation.
+    
+    // Set transformation matrix for this coin.
+    coinMatrices[i] = staticCoins[i]->getLocalTransformMatrix();
+  }
   
-    // Static coins.
-    for (auto &p: staticCoins) {
-      ofEnableBlendMode(OF_BLENDMODE_SCREEN);
-      coinMaterial.begin();
-      p.draw();
-      coinMaterial.end();
-      ofDisableBlendMode();
-    }
-  
-    // Flying coins.
-    for (auto &dp: flyingCoins) {
-      ofEnableBlendMode(OF_BLENDMODE_ADD);
-      coinMaterial.begin();
-      dp.draw();
-      coinMaterial.end();
-      ofDisableBlendMode();
-    }
-  ofPopMatrix();
+  buffer.updateData(0, coinMatrices);
 }
 
-// Draw openFrameworks mesh.
-void Form::drawMesh() {
-  // Draw model mesh.
-  ofPushMatrix();
-    ofxAssimpMeshHelper & meshHelper = model.getMeshHelper(0);
-    ofMultMatrix(model.getModelMatrix());
-    ofMultMatrix(meshHelper.matrix);
-    mesh.drawWireframe();
-  ofPopMatrix();
+void Form::createFlyingCoins() {
+  
+}
+
+void Form::updateFlyingCoins() {
+  
 }
 
 void Form::pushDrawMode(DrawMode mode) {
@@ -139,39 +183,5 @@ int Form::getDynamicParticleCount() {
 }
 
 int Form::getMeshVertexCount() {
-  return mesh.getVertices().size();
-}
-
-void Form::draw() {
-  for (auto mode: drawModes) {
-    switch (mode) {
-      case DrawMode::Faces: {
-        model.drawFaces();
-        break;
-      }
-      
-      case DrawMode::Wireframe: {
-        ofEnableBlendMode(OF_BLENDMODE_ALPHA);
-        ofPushStyle();
-          ofColor c = ofColor(ofColor::goldenRod, meshOpacity);
-          ofSetColor(c);
-          drawMesh();
-        ofPopStyle();
-        ofDisableBlendMode();
-        break;
-      }
-      
-      case DrawMode::Vertices: {
-        model.drawVertices();
-        break;
-      }
-      
-      case DrawMode::Particles: {
-        drawCoins();
-      }
-      
-      default:
-        break;
-    }
-  }
+  return humanMesh.getVertices().size();
 }

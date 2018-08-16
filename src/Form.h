@@ -3,7 +3,6 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "Coin.h"
-#include "ofxGui.h"
 
 enum DrawMode {
   Wireframe,
@@ -31,20 +30,31 @@ class Form {
     ofxAssimpModelLoader model;
     
   private:
-    string modelPath; 
-    ofMesh mesh;
-    vector<DrawMode> drawModes;
-    // Fixed coins that make up the body.
-    vector<Coin> staticCoins;
-    // Flying coins.
-    vector<Coin> flyingCoins;
-    float meshOpacity;
-    ofMaterial coinMaterial;
+    ofMatrix4x4 concatMatrix; 
+    ofMesh humanMesh;
+    ofVboMesh cylinderMesh;
+    vector<Coin*> staticCoins;
+    vector<Coin*> flyingCoins;
   
-    // Private methods.
-    void drawMesh();
-    void drawCoins();
+    // Coin drawing shader.
+    ofShader shader;
+    ofBufferObject buffer;
+    vector<ofMatrix4x4> coinMatrices;
+    ofTexture tex;
+  
+    float meshOpacity;
+    vector<DrawMode> drawModes;
+  
+    // Shader
+    void setupShaderBuffer();
+  
+    // Static coins.
     void createStaticCoins();
+    void updateStaticCoins();
+  
+    // Flying coins.
     void createFlyingCoins();
     void updateFlyingCoins();
+  
+    const int maxCoins = 15000; // Static + Dynamic coins. 
 };
