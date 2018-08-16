@@ -26,13 +26,14 @@ class Form {
     int getMeshVertexCount();
   
     // Important methods. 
-    void initialize();
-    void cleanMemory();
+    void setup();
+    void deallocate();
     
     // Expose the model to get and set specific properties
     ofxAssimpModelLoader model;
     
   private:
+    string modelPath; 
     ofMesh mesh;
     vector<DrawMode> drawModes;
     // Fixed coins that make up the body.

@@ -1,9 +1,13 @@
 #include "Form.h"
 
 Form::Form(string modelName) {
+  // Keep the path to initialize the form later. 
+  modelPath = modelName;
+}
 
+void Form::setup() {
   // Load our model and set it up for animations.
-  model.loadModel(modelName, false);
+  model.loadModel(modelPath, false);
   model.setPosition(0, 0, 0);
   model.setRotation(0, 180, 0, 0, 1);
   model.setScale(1.5, 1.5, 1.5);
@@ -14,10 +18,20 @@ Form::Form(string modelName) {
   // Get the first animated mesh.
   mesh = model.getCurrentAnimatedMesh(0);
   
-  // Setup material
-  coinMaterial.setSpecularColor(ofFloatColor::greenYellow);
-  coinMaterial.setDiffuseColor(ofFloatColor::goldenRod);
-  coinMaterial.setShininess(15.);
+  // Create static coins.
+  createStaticCoins();
+}
+
+void Form::deallocate() {
+  // Deallocate the model. 
+  model.clear();
+  
+  // Delete the coin containers.
+  staticCoins.clear();
+  flyingCoins.clear();
+  
+  // Clear all draw modes.
+  drawModes.clear();
 }
 
 void Form::update() {
@@ -37,16 +51,6 @@ void Form::update() {
   // Create flying coins and update their life.
   createFlyingCoins();
   updateFlyingCoins();
-}
-
-void Form::initialize() {
-  createStaticCoins();
-}
-
-void Form::cleanMemory() {
-  staticCoins.clear();
-  flyingCoins.clear();
-  drawModes.clear();
 }
 
 void Form::createFlyingCoins() {

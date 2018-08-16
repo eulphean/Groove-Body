@@ -57,7 +57,7 @@ void ofApp::setup(){
     light.setSpecularColor(ofFloatColor::greenYellow);
   
     // Initialize the current form
-    forms[curFormIdx].initialize();
+    forms[curFormIdx].setup();
 }
 
 //--------------------------------------------------------------
@@ -83,7 +83,6 @@ void ofApp::draw(){
   if (!hideControls) {
     gui.draw();
     // Debug text
-    
     ofDrawBitmapStringHighlight("Vertices: " +  ofToString(forms[curFormIdx].getMeshVertexCount()),50, 10);
     ofDrawBitmapStringHighlight("Frame Rate: " + ofToString(ofGetFrameRate()), 50, 40);
     ofDrawBitmapStringHighlight("Dynamic Particle Count: " + ofToString(forms[curFormIdx].getDynamicParticleCount()), 50, 25);
@@ -96,17 +95,6 @@ void ofApp::draw(){
   
     // Draw the model.
     forms[curFormIdx].draw();
-  
-    // Draw the light
-    if (!hideControls) {
-      ofPushStyle();
-        ofPushMatrix();
-          ofTranslate(light.getPosition());
-          ofSetColor(ofColor::red);
-          ofDrawSphere(0, 0, 0, 1);
-        ofPopMatrix();
-      ofPopStyle();
-    }
   
     light.disable();
     ofDisableLighting();
@@ -122,13 +110,13 @@ void ofApp::exit() {
 void ofApp::keyPressed(int key){
   if (key == ' ') {
     // Clean the coin memory from the previous form.
-    forms[curFormIdx].cleanMemory();
+    forms[curFormIdx].deallocate();
     
     // Next form.
     curFormIdx = (curFormIdx + 1) % forms.size();
     
     // Initialize the form.
-    forms[curFormIdx].initialize();
+    forms[curFormIdx].setup();
     
     // Push current draw mode state.
     if (wireframe == true) {
