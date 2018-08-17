@@ -6,6 +6,13 @@
 #include "Form.h"
 #include "ofxGui.h"
 
+enum CamState {
+  Far,
+  Close,
+  SuperClose,
+  Orbit
+};
+
 class ofApp : public ofBaseApp{
 
 	public:

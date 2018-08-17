@@ -20,6 +20,9 @@ void Form::setup(string modelPath) {
   // Setup shader.
   setupShaderBuffer();
   
+  // Store initialize time.
+  initTime = ofGetElapsedTimeMillis();
+  
   // Create static coins.
   createStaticCoins();
 }
@@ -61,9 +64,11 @@ void Form::update() {
   
   updateStaticCoins();
   
-  // Create flying coins and update their life.
-  createFlyingCoins();
-  updateFlyingCoins();
+  // Create flying coins x seconds after model is created to avoid a sudden burst. 
+  if (ofGetElapsedTimeMillis() - initTime > 3000) {
+    createFlyingCoins();
+    updateFlyingCoins();
+  }
 }
 
 void Form::draw() {
@@ -175,7 +180,8 @@ void Form::createFlyingCoins() {
     for (int i = 0; i < staticCoins.size(); i++) {
       Coin *c = new Coin;
       c->setPosition(staticCoins[i]->getPosition());
-      c->velocity = glm::vec3(ofRandom(-4, 4), ofRandom(-4, 4), ofRandom(0, 6));
+      // Initial velocity for first flying coin creation.
+      c->velocity = glm::vec3(ofRandom(-20, 20), ofRandom(-20, 20), ofRandom(0, 5));
       flyingCoins.push_back(c);
     }
   }
@@ -183,8 +189,10 @@ void Form::createFlyingCoins() {
 
 void Form::updateFlyingCoins() {
   for (int i = 0; i < flyingCoins.size(); i++) {
-    // Update the coin.
+    // Update this coin.
     flyingCoins[i]->update(ofGetLastFrameTime()/ofRandom(1, 150));
+    
+    // If it's not alive, reset the coin.
     if (!flyingCoins[i] -> isAlive()) {
       // Update coin at a position.
       int idxForPos = i % staticCoins.size();
@@ -197,7 +205,7 @@ void Form::updateFlyingCoins() {
     coinMatrices[staticCoins.size() + i] = flyingCoins[i]->getLocalTransformMatrix();
   }
   
-  // Update buffer with flying coins matrices.
+  // Update buffer with flying coin matrices.
   buffer.updateData(0, coinMatrices);
 }
 

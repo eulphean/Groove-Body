@@ -56,5 +56,6 @@ class Form {
     void createFlyingCoins();
     void updateFlyingCoins();
   
-    int maxCoins; // Static + Dynamic coins. 
+    int maxCoins; // Static + Dynamic coins.
+    unsigned int initTime; 
 };
