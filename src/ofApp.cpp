@@ -47,7 +47,7 @@ void ofApp::setup(){
     particles.addListener(this, &ofApp::particlesCallback);
   
     gui.loadFromFile(guiXml);
-    gui.setPosition(glm::vec2(50, 55));
+    gui.setPosition(glm::vec2(50, 65));
   
     // Set tilt angle.
     cam.tiltDeg(tiltCamera);
@@ -80,8 +80,9 @@ void ofApp::draw(){
     gui.draw();
     // Debug text
     ofDrawBitmapStringHighlight("Vertices: " +  ofToString(currentForm.getMeshVertexCount()),50, 10);
-    ofDrawBitmapStringHighlight("Frame Rate: " + ofToString(ofGetFrameRate()), 50, 40);
     ofDrawBitmapStringHighlight("Dynamic Particle Count: " + ofToString(currentForm.getDynamicParticleCount()), 50, 25);
+    ofDrawBitmapStringHighlight("Frame Rate: " + ofToString(ofGetFrameRate()), 50, 40);
+    ofDrawBitmapStringHighlight("Model name: " + formPaths[formPathIdx], 50, 55);
   }
   
   ofEnableDepthTest();

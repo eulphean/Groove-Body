@@ -56,7 +56,6 @@ class ofApp : public ofBaseApp{
     void facesCallback(bool &value);
     void verticesCallback(bool &value);
     void particlesCallback(bool &value);
-    
 };
 
 #endif
