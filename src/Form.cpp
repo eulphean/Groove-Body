@@ -40,9 +40,9 @@ void Form::deallocate() {
     delete staticCoins[i];
   }
   
-//  for (int i = 0; i < flyingCoins.size(); i++) {
-//    delete flyingCoins[i];
-//  }
+  for (int i = 0; i < flyingCoins.size(); i++) {
+    delete flyingCoins[i];
+  }
 
   staticCoins.clear();
   flyingCoins.clear();
