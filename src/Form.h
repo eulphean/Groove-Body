@@ -28,6 +28,7 @@ class Form {
     
     // Expose the model to get and set specific properties
     ofxAssimpModelLoader model;
+    bool updateCameraState = false;
     
   private:
     ofMatrix4x4 concatMatrix; 

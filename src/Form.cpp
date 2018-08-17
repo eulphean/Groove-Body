@@ -184,6 +184,7 @@ void Form::createFlyingCoins() {
       c->velocity = glm::vec3(ofRandom(-20, 20), ofRandom(-20, 20), ofRandom(0, 5));
       flyingCoins.push_back(c);
     }
+    updateCameraState = true;
   }
 }
 
@@ -197,7 +198,7 @@ void Form::updateFlyingCoins() {
       // Update coin at a position.
       int idxForPos = i % staticCoins.size();
       flyingCoins[i]->setPosition(staticCoins[idxForPos]->getPosition());
-      flyingCoins[i]->velocity = glm::vec3(ofRandom(-2, 2), ofRandom(-2, 2), ofRandom(0, 2));
+      flyingCoins[i]->velocity = glm::vec3(ofRandom(-2, 2), ofRandom(-2, 2), ofRandom(0, 1));
       flyingCoins[i]->life = 1.0;
     }
     
