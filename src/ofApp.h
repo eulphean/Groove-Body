@@ -52,7 +52,7 @@ class ofApp : public ofBaseApp{
     ofParameter<float> tiltCamera { "tilt: camera", 0, -180, 180 };
     ofParameter<float> xLight { "x: light", 0, -10000, 10000 };
     ofParameter<float> yLight { "y: light", 0, -10000, 10000 };
-    ofParameter<float> zLight { "z: light", 200, -10000, 10000 };
+    ofParameter<float> zLight { "z: light", 8000, -10000, 10000 };
     // Model parameters
     ofxToggle wireframe; ofxToggle faces; ofxToggle vertices; ofxToggle particles;
     const string guiXml = "humanform.xml";
