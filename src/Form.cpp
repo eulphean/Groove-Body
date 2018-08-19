@@ -67,7 +67,7 @@ void Form::update() {
   cam.update();
   
   // Opacity of the model mesh.
-  meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef() * 0.4), -1, 1, 0, 0.75, true);
+  meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef() * 0.2), -1, 1, 0, 0.3, true);
   
   // Update model animation.
   model.update();
