@@ -21,27 +21,14 @@ class ofApp : public ofBaseApp{
     int formPathIdx = 0;
     vector<string> formPaths;
   
-    // Light
-    ofLight	light;
-  
     // Plane
     ofPlanePrimitive plane; 
-  
-    // Camera
-    // ofCamera cam;
   
     // Hide/Show things
     bool hideControls = false;
   
     // GUI
     ofxPanel gui;
-    ofParameter<float> xCamera { "x: camera", 0, -5000, 5000 }; 
-    ofParameter<float> yCamera { "y: camera", 0, -5000, 5000 };
-    ofParameter<float> zCamera { "z: camera", 20, -5000, 10000 };
-    ofParameter<float> tiltCamera { "tilt: camera", 0, -180, 180 };
-    ofParameter<float> xLight { "x: light", 0, -10000, 10000 };
-    ofParameter<float> yLight { "y: light", 0, -10000, 10000 };
-    ofParameter<float> zLight { "z: light", 8000, -10000, 10000 };
     // Model parameters
     ofxToggle wireframe; ofxToggle faces; ofxToggle vertices; ofxToggle particles;
     const string guiXml = "humanform.xml";

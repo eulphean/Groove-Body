@@ -1,6 +1,16 @@
 #include "Form.h"
 
 void Form::setup(string modelPath) {
+  // Setup material.
+  material.setDiffuseColor(ofColor(ofColor::gold, 0.5));
+  material.setSpecularColor(ofColor(ofColor::yellow, 0.5));
+  material.setShininess(30.f);
+  
+  // Setup light
+  light.setDiffuseColor(ofColor::gold);
+  light.setSpecularColor(ofColor::yellowGreen);
+  light.setPosition(xLight, yLight, zLight);
+  
   // Load our model and set it up for animations.
   model.loadModel(modelPath, false);
   model.setPosition(0, 0, 0);
@@ -9,6 +19,7 @@ void Form::setup(string modelPath) {
   model.setLoopStateForAllAnimations(OF_LOOP_NORMAL);
   model.setPausedForAllAnimations(false);
   model.playAllAnimations();
+  glShadeModel(GL_SMOOTH);
   
   // Calculate concat matrix.
   concatMatrix.preMult(model.getModelMatrix());
@@ -58,6 +69,12 @@ void Form::deallocate() {
 }
 
 void Form::update() {
+  // Update light position.
+  light.setPosition(xLight, yLight, zLight);
+  
+  // Camera
+  cam.update();
+  
   // Opacity of the model mesh.
   meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef()), -1, 1, 0, 100, true);
   
@@ -65,10 +82,8 @@ void Form::update() {
   model.update();
   humanMesh = model.getCurrentAnimatedMesh(0);
   
+  // Coins.
   updateStaticCoins();
-  
-  cam.update();
-
   // Create flying coins x seconds after model is created to avoid a sudden burst.
   if (ofGetElapsedTimeMillis() - initTime > 5000) {
     createFlyingCoins();
@@ -87,16 +102,18 @@ void Form::draw() {
         }
         
         case DrawMode::Wireframe: {
-          ofEnableBlendMode(OF_BLENDMODE_ALPHA);
           ofPushStyle();
-            auto c = ofColor(ofColor::darkGoldenRod, meshOpacity);
-            ofSetColor(c);
+            ofEnableLighting();
+            light.enable();
+            material.begin();
             ofPushMatrix();
               ofMultMatrix(concatMatrix);
-              humanMesh.drawWireframe();
+              //humanMesh.drawWireframe();
             ofPopMatrix();
+            material.end();
+            light.disable();
+            ofDisableLighting();
           ofPopStyle();
-          ofDisableBlendMode();
           break;
         }
         
@@ -115,6 +132,8 @@ void Form::draw() {
           
           if (staticCoins.size() > 0) {
             shader.begin();
+              shader.setUniform3f("uLightPosition", glm::vec3(xLight, yLight, zLight));
+              shader.setUniform4f("uMaterialColor", ofColor(ofColor::yellowGreen));
               cylinderMesh.drawInstanced(OF_MESH_FILL, size);
             shader.end();
           }

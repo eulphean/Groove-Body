@@ -8,7 +8,7 @@
 	<Faces>0</Faces>
 	<Vertices>0</Vertices>
 	<Particles>1</Particles>
-	<x:_light>-600</x:_light>
-	<y:_light>-800</y:_light>
-	<z:_light>5900</z:_light>
+	<x:_light>-200</x:_light>
+	<y:_light>-1000</y:_light>
+	<z:_light>1000</z:_light>
 </group>

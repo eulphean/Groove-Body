@@ -29,7 +29,11 @@ class Form {
     
     // Expose the model to get and set specific properties
     ofxAssimpModelLoader model;
-    
+  
+    // Lighting.
+    ofParameter<float> xLight { "x: light", 0, -5000, 5000 };
+    ofParameter<float> yLight { "y: light", 500, -5000, 5000 };
+    ofParameter<float> zLight { "z: light", 500, 0, 10000 };
   private:
     BreathCam cam;
     
@@ -45,6 +49,7 @@ class Form {
     vector<ofMatrix4x4> coinMatrices;
     ofTexture tex;
   
+    ofMaterial material;
     float meshOpacity;
     vector<DrawMode> drawModes;
   
@@ -64,5 +69,8 @@ class Form {
   
     // Camera
     void initCamera();
+  
+    // Light (only for Mesh, use the position for global light).
+    ofLight light;
 
 };

@@ -1,11 +1,15 @@
 #version 150
 
 uniform mat4 modelViewProjectionMatrix;
-in vec4 position;
-in vec4 color; 
 uniform samplerBuffer tex;
 
-out vec4 oColor;
+in vec4 position;
+in vec4 color; 
+in vec4 normal; 
+
+out vec4 meshColor;
+out vec3 vecNormal;
+out vec4 vecPosition;
 
 void main(){	 
     int x = gl_InstanceID*4;
@@ -16,6 +20,9 @@ void main(){
         texelFetch(tex, x+3)
     );	
 
-    oColor = color;
-    gl_Position = modelViewProjectionMatrix  *  transformMatrix * position;
+    vecPosition = modelViewProjectionMatrix * transformMatrix * position;
+    vecNormal = normal.xyz;
+    gl_Position = vecPosition;
+
+     meshColor = color;
 }

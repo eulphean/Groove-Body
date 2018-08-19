@@ -63,7 +63,7 @@ class BreathCam : public CameraProfile {
         }
         
         case CamState::Orbit: {
-          orbit += ofGetLastFrameTime() * 5;
+          orbit += ofGetLastFrameTime() * 2;
           this->orbitDeg(orbit, 0, glm::distance(this->getPosition(), sceneCenter), sceneCenter);
           break;
         }

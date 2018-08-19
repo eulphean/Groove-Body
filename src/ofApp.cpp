@@ -12,16 +12,7 @@ void ofApp::setup(){
     ofBackground(backgroundColor);
   
     // Load all the forms. 
-    loadForms();
-
-//    // Setup camera.
-//    cam.disableMouseInput();
-//    cam.setFarClip(15000);
-//    destPosIdx = 0;
-//    camState = CamState::Far;
-//    cam.setPosition(camPosition[destPosIdx]); // Set initial camera position for the camera.
-//    camTime = ofGetElapsedTimeMillis();
-//    cameraOrbit = 0;
+    loadForms(); 
   
     // Setup plane.
     plane.set(1000, 1000);
@@ -31,20 +22,15 @@ void ofApp::setup(){
   
     // Setup GUI.
     gui.setup();
-    gui.add(xCamera);
-    gui.add(yCamera);
-    gui.add(zCamera);
-    gui.add(tiltCamera);
-    gui.add(xLight);
-    gui.add(yLight);
-    gui.add(zLight);
+    gui.add(currentForm.xLight);
+    gui.add(currentForm.yLight);
+    gui.add(currentForm.zLight);
     gui.add(wireframe.setup("Wireframe", false));
     gui.add(faces.setup("Faces", false));
     gui.add(vertices.setup("Vertices", false));
     gui.add(particles.setup("Particles", false));
   
     // Listeners
-    tiltCamera.addListener(this, &ofApp::cameraTiltCallback);
     wireframe.addListener(this, &ofApp::wireframeCallback);
     faces.addListener(this, &ofApp::facesCallback);
     vertices.addListener(this, &ofApp::verticesCallback);
@@ -53,28 +39,14 @@ void ofApp::setup(){
     gui.loadFromFile(guiXml);
     gui.setPosition(glm::vec2(50, 65));
   
-    // Set tilt angle.
-    //cam.tiltDeg(tiltCamera);
-  
-    // Setup light.
-    light.setPosition(xLight, yLight, zLight);
-    light.setDiffuseColor(ofFloatColor::gold);
-    light.setSpecularColor(ofFloatColor::greenYellow);
-  
     // Initialize the current form
     currentForm.setup(formPaths[formPathIdx]);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
-  // Update light position
-  light.setPosition(xLight, yLight, zLight);
-
   // Update the form for animation.
   currentForm.update();
-  
-//  // Update camera
-//  updateCamera();
 }
 
 //--------------------------------------------------------------
@@ -90,16 +62,8 @@ void ofApp::draw(){
   }
   
   ofEnableDepthTest();
-  //cam.begin();
-  ofEnableLighting();
-  light.enable();
-
   // Draw the model.
   currentForm.draw();
-
-  light.disable();
-  ofDisableLighting();
- // cam.end();
   ofDisableDepthTest();
 }
 
