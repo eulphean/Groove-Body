@@ -22,9 +22,9 @@ void ofApp::setup(){
   
     // Setup GUI.
     gui.setup();
-    gui.add(currentForm.xLight);
-    gui.add(currentForm.yLight);
-    gui.add(currentForm.zLight);
+    gui.add(currentForm.xCoinLight);
+    gui.add(currentForm.yCoinLight);
+    gui.add(currentForm.zCoinLight);
     gui.add(wireframe.setup("Wireframe", false));
     gui.add(faces.setup("Faces", false));
     gui.add(vertices.setup("Vertices", false));

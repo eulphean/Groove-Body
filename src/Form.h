@@ -31,25 +31,33 @@ class Form {
     ofxAssimpModelLoader model;
   
     // Lighting.
-    ofParameter<float> xLight { "x: light", 0, -5000, 5000 };
-    ofParameter<float> yLight { "y: light", 500, -5000, 5000 };
-    ofParameter<float> zLight { "z: light", 500, 0, 10000 };
+  
+    // Coins
+    ofParameter<float> xCoinLight { "x: Coin light", 0, -5000, 5000 };
+    ofParameter<float> yCoinLight { "y: Coing light", 500, -5000, 5000 };
+    ofParameter<float> zCoinLight { "z: Coin light", 500, 0, 10000 };
+  
+    // Human mesh. 
+    ofParameter<float> xMeshLight { "x: Mesh ight", 0, -5000, 5000 };
+    ofParameter<float> yMeshLight { "y: Mesh light", 500, -5000, 5000 };
+    ofParameter<float> zMeshLight { "z: Mesh light", 500, 0, 10000 };
   private:
     BreathCam cam;
     
-    ofMatrix4x4 concatMatrix; 
+    ofMatrix4x4 concatMatrix;
     ofMesh humanMesh;
+    ofShader meshShader;
+  
     ofVboMesh cylinderMesh;
     vector<Coin*> staticCoins;
     vector<Coin*> flyingCoins;
   
     // Coin drawing shader.
-    ofShader shader;
+    ofShader coinShader;
     ofBufferObject buffer;
     vector<ofMatrix4x4> coinMatrices;
     ofTexture tex;
   
-    ofMaterial material;
     float meshOpacity;
     vector<DrawMode> drawModes;
   
@@ -69,8 +77,4 @@ class Form {
   
     // Camera
     void initCamera();
-  
-    // Light (only for Mesh, use the position for global light).
-    ofLight light;
-
 };
