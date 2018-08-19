@@ -14,14 +14,14 @@ void ofApp::setup(){
     // Load all the forms. 
     loadForms();
 
-    // Setup camera.
-    cam.disableMouseInput();
-    cam.setFarClip(15000);
-    destPosIdx = 0;
-    camState = CamState::Far;
-    cam.setPosition(camPosition[destPosIdx]); // Set initial camera position for the camera.
-    camTime = ofGetElapsedTimeMillis();
-    cameraOrbit = 0;
+//    // Setup camera.
+//    cam.disableMouseInput();
+//    cam.setFarClip(15000);
+//    destPosIdx = 0;
+//    camState = CamState::Far;
+//    cam.setPosition(camPosition[destPosIdx]); // Set initial camera position for the camera.
+//    camTime = ofGetElapsedTimeMillis();
+//    cameraOrbit = 0;
   
     // Setup plane.
     plane.set(1000, 1000);
@@ -54,7 +54,7 @@ void ofApp::setup(){
     gui.setPosition(glm::vec2(50, 65));
   
     // Set tilt angle.
-    cam.tiltDeg(tiltCamera);
+    //cam.tiltDeg(tiltCamera);
   
     // Setup light.
     light.setPosition(xLight, yLight, zLight);
@@ -73,8 +73,8 @@ void ofApp::update(){
   // Update the form for animation.
   currentForm.update();
   
-  // Update camera
-  updateCamera();
+//  // Update camera
+//  updateCamera();
 }
 
 //--------------------------------------------------------------
@@ -90,68 +90,17 @@ void ofApp::draw(){
   }
   
   ofEnableDepthTest();
-  cam.begin();
-    ofEnableLighting();
-    light.enable();
-  
-    // Draw the model.
-    currentForm.draw();
-  
-    light.disable();
-    ofDisableLighting();
-  cam.end();
+  //cam.begin();
+  ofEnableLighting();
+  light.enable();
+
+  // Draw the model.
+  currentForm.draw();
+
+  light.disable();
+  ofDisableLighting();
+ // cam.end();
   ofDisableDepthTest();
-}
-
-void ofApp::updateCamera() {
-  auto elapsedTime = ofGetElapsedTimeMillis() - camTime;
-  
-  if (elapsedTime > 2000 && isCamMoving == false) {
-    // Set the next state.
-    if (camState == CamState::Far) {
-      camState = CamState::Close;
-      destPosIdx = 1;
-    } else if (camState == CamState::Close) {
-      camState = CamState::SuperClose;
-      destPosIdx = 2;
-    } else if (camState == CamState::SuperClose) {
-      camState = CamState::Orbit;
-    }
-  }
-  
-  auto destPos = camPosition[destPosIdx];
-  auto curCamPos = cam.getPosition();
-  if (curCamPos != destPos) {
-    moveCamera(destPosIdx);
-  }
-}
-
-void ofApp::moveCamera(int destPosIdx) {
-  auto destPos = camPosition[destPosIdx];
-  auto curCamPos = cam.getPosition();
-  
-  // Update x
-  if (curCamPos.x != destPos.x) {
-    curCamPos.x = curCamPos.x - 1;
-  }
-  // Update y
-  if (curCamPos.y != destPos.y) {
-    curCamPos.y = curCamPos.y + 1 ;
-  }
-  // Update z
-  if (curCamPos.z != destPos.z) {
-    curCamPos.z = curCamPos.z - 5;
-  }
-  
-  cam.setPosition(curCamPos);
-  
-  // Are we there yet?
-  if (curCamPos == destPos) {
-    camTime = ofGetElapsedTimeMillis(); // Save the last time.
-    isCamMoving = false;
-  } else {
-    isCamMoving = true;
-  }
 }
 
 void ofApp::exit() {
@@ -167,11 +116,7 @@ void ofApp::keyPressed(int key){
     
     // Next form.
     formPathIdx = (formPathIdx + 1) % formPaths.size();
-    
-    destPosIdx = 0;
-    camState = CamState::Far;
-    cam.setPosition(camPosition[destPosIdx]); // Set initial camera position for the camera.
-    camTime = ofGetElapsedTimeMillis();
+  
     
     // Initialize the current form with new model.
     currentForm.setup(formPaths[formPathIdx]);
@@ -217,7 +162,7 @@ void ofApp::loadForms() {
 
 // GUI callbacks.
 void ofApp::cameraTiltCallback(float &angle) {
-  cam.tiltDeg(angle);
+  //cam.tiltDeg(angle);
 }
 
 void ofApp::wireframeCallback(bool &value) {

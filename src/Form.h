@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxAssimpModelLoader.h"
 #include "Coin.h"
+#include "CameraProfile.h"
 
 enum DrawMode {
   Wireframe,
@@ -28,9 +29,10 @@ class Form {
     
     // Expose the model to get and set specific properties
     ofxAssimpModelLoader model;
-    bool updateCameraState = false;
     
   private:
+    BreathCam cam;
+    
     ofMatrix4x4 concatMatrix; 
     ofMesh humanMesh;
     ofVboMesh cylinderMesh;
@@ -46,6 +48,9 @@ class Form {
     float meshOpacity;
     vector<DrawMode> drawModes;
   
+    int maxCoins; // Static + Dynamic coins.
+    float initTime; 
+  
     // Shader
     void setupShaderBuffer();
   
@@ -57,6 +62,7 @@ class Form {
     void createFlyingCoins();
     void updateFlyingCoins();
   
-    int maxCoins; // Static + Dynamic coins.
-    unsigned int initTime; 
+    // Camera
+    void initCamera();
+
 };

@@ -25,6 +25,9 @@ void Form::setup(string modelPath) {
   
   // Create static coins.
   createStaticCoins();
+  
+  // Initialize camera
+  initCamera();
 }
 
 void Form::deallocate() {
@@ -64,52 +67,73 @@ void Form::update() {
   
   updateStaticCoins();
   
-  // Create flying coins x seconds after model is created to avoid a sudden burst. 
-  if (ofGetElapsedTimeMillis() - initTime > 3000) {
+  cam.update();
+
+  // Create flying coins x seconds after model is created to avoid a sudden burst.
+  if (ofGetElapsedTimeMillis() - initTime > 5000) {
     createFlyingCoins();
     updateFlyingCoins();
   }
 }
 
 void Form::draw() {
-  for (auto mode: drawModes) {
-    switch (mode) {
-      case DrawMode::Faces: {
-        model.drawFaces();
-        break;
-      }
-      
-      case DrawMode::Wireframe: {
-        ofEnableBlendMode(OF_BLENDMODE_ALPHA);
-        ofPushStyle();
-          auto c = ofColor(ofColor::darkGoldenRod, meshOpacity);
-          ofSetColor(c);
-          ofPushMatrix();
-            ofMultMatrix(concatMatrix);
-            humanMesh.drawWireframe();
-          ofPopMatrix();
-        ofPopStyle();
-        ofDisableBlendMode();
-        break;
-      }
-      
-      case DrawMode::Vertices: {
-        model.drawVertices();
-        break;
-      }
-      
-      case DrawMode::Particles: {
-        if (staticCoins.size() > 0 || flyingCoins.size() > 0) {
-          shader.begin();
-            cylinderMesh.drawInstanced(OF_MESH_FILL, coinMatrices.size());
-          shader.end();
+  cam.begin();
+  
+    for (auto mode: drawModes) {
+      switch (mode) {
+        case DrawMode::Faces: {
+          model.drawFaces();
+          break;
         }
+        
+        case DrawMode::Wireframe: {
+          ofEnableBlendMode(OF_BLENDMODE_ALPHA);
+          ofPushStyle();
+            auto c = ofColor(ofColor::darkGoldenRod, meshOpacity);
+            ofSetColor(c);
+            ofPushMatrix();
+              ofMultMatrix(concatMatrix);
+              humanMesh.drawWireframe();
+            ofPopMatrix();
+          ofPopStyle();
+          ofDisableBlendMode();
+          break;
+        }
+        
+        case DrawMode::Vertices: {
+          model.drawVertices();
+          break;
+        }
+        
+        case DrawMode::Particles: {
+          int size;
+          if (staticCoins.size() > 0 && flyingCoins.size() > 0) {
+            size = coinMatrices.size();
+          } else {
+            size = staticCoins.size();
+          }
+          
+          if (staticCoins.size() > 0) {
+            shader.begin();
+              cylinderMesh.drawInstanced(OF_MESH_FILL, size);
+            shader.end();
+          }
+        }
+        
+        default:
+          break;
       }
-      
-      default:
-        break;
     }
-  }
+  
+  cam.end();
+}
+
+void Form::initCamera() {
+  auto sceneCenter = model.getSceneCenter() * model.getNormalizedScale() * model.getScale();
+  auto sceneMin = model.getSceneMin() * model.getNormalizedScale() * model.getScale();
+  auto sceneMax = model.getSceneMax() * model.getNormalizedScale() * model.getScale();
+  auto head = glm::vec3(sceneCenter.x, sceneMax.y, sceneCenter.z);
+  cam.init(sceneCenter, sceneMin, sceneMax, head);
 }
 
 void Form::setupShaderBuffer() {
@@ -181,10 +205,9 @@ void Form::createFlyingCoins() {
       Coin *c = new Coin;
       c->setPosition(staticCoins[i]->getPosition());
       // Initial velocity for first flying coin creation.
-      c->velocity = glm::vec3(ofRandom(-20, 20), ofRandom(-20, 20), ofRandom(0, 5));
+      c->velocity = glm::vec3(ofRandom(-3, 3), ofRandom(-3, 3), ofRandom(-1, 1));
       flyingCoins.push_back(c);
     }
-    updateCameraState = true;
   }
 }
 
@@ -198,7 +221,7 @@ void Form::updateFlyingCoins() {
       // Update coin at a position.
       int idxForPos = i % staticCoins.size();
       flyingCoins[i]->setPosition(staticCoins[idxForPos]->getPosition());
-      flyingCoins[i]->velocity = glm::vec3(ofRandom(-2, 2), ofRandom(-2, 2), ofRandom(0, 1));
+      flyingCoins[i]->velocity = glm::vec3(ofRandom(-2, 2), ofRandom(-2, 2), ofRandom(-1, 1));
       flyingCoins[i]->life = 1.0;
     }
     
