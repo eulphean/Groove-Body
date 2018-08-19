@@ -11,7 +11,10 @@
 	<x:_light>-200</x:_light>
 	<y:_light>-1000</y:_light>
 	<z:_light>1000</z:_light>
-	<x:_Coin_light>0</x:_Coin_light>
-	<y:_Coing_light>500</y:_Coing_light>
-	<z:_Coin_light>500</z:_Coin_light>
+	<x:_Coin_light>-5000</x:_Coin_light>
+	<y:_Coing_light>-1550</y:_Coing_light>
+	<z:_Coin_light>1650</z:_Coin_light>
+	<x:_Mesh_ight>-10000</x:_Mesh_ight>
+	<y:_Mesh_light>-700</y:_Mesh_light>
+	<z:_Mesh_light>-21500</z:_Mesh_light>
 </group>

@@ -41,6 +41,7 @@ void Form::deallocate() {
   
   // Unload shader.
   coinShader.unload();
+  meshShader.unload();
   
   // Clear matrices
   coinMatrices.clear();
@@ -66,7 +67,7 @@ void Form::update() {
   cam.update();
   
   // Opacity of the model mesh.
-  meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef()), -1, 1, 0, 100, true);
+  meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef() * 0.4), -1, 1, 0, 0.75, true);
   
   // Update model animation.
   model.update();
@@ -96,6 +97,10 @@ void Form::draw() {
             ofPushMatrix();
               ofMultMatrix(concatMatrix);
               meshShader.begin();
+              meshShader.setUniform3f("uLightPosition", glm::vec3(xMeshLight, yMeshLight, zMeshLight));
+              meshShader.setUniform4f("uMaterialColor", ofFloatColor(ofFloatColor::goldenRod));
+              meshShader.setUniform1f("uOpacity", meshOpacity);
+              meshShader.setUniform1f("uNormalScale", model.getNormalizedScale());
               humanMesh.drawWireframe();
               meshShader.end();
             ofPopMatrix();

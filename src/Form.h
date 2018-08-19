@@ -38,9 +38,9 @@ class Form {
     ofParameter<float> zCoinLight { "z: Coin light", 500, 0, 10000 };
   
     // Human mesh. 
-    ofParameter<float> xMeshLight { "x: Mesh ight", 0, -5000, 5000 };
-    ofParameter<float> yMeshLight { "y: Mesh light", 500, -5000, 5000 };
-    ofParameter<float> zMeshLight { "z: Mesh light", 500, 0, 10000 };
+    ofParameter<float> xMeshLight { "x: Mesh ight", 0, -10000, 10000 };
+    ofParameter<float> yMeshLight { "y: Mesh light", 500, -10000, 10000 };
+    ofParameter<float> zMeshLight { "z: Mesh light", 500, -50000, 50000 };
   private:
     BreathCam cam;
     

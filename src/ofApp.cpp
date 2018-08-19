@@ -3,7 +3,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     // Verbose, Notice, Warning, Error, FatalError, Silent
-    ofSetLogLevel(OF_LOG_VERBOSE);
+    ofSetLogLevel(OF_LOG_NOTICE);
     ofSetVerticalSync(true);
   
     ofSetCylinderResolution(10, 10);
@@ -25,6 +25,9 @@ void ofApp::setup(){
     gui.add(currentForm.xCoinLight);
     gui.add(currentForm.yCoinLight);
     gui.add(currentForm.zCoinLight);
+    gui.add(currentForm.xMeshLight);
+    gui.add(currentForm.yMeshLight);
+    gui.add(currentForm.zMeshLight);
     gui.add(wireframe.setup("Wireframe", false));
     gui.add(faces.setup("Faces", false));
     gui.add(vertices.setup("Vertices", false));
