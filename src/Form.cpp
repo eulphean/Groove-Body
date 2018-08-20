@@ -232,8 +232,12 @@ void Form::createFlyingCoins() {
       Coin *c = new Coin;
       c->setPosition(staticCoins[i]->getPosition());
       c->setScale(7.0);
+      // Normal of the current point
+      auto normal = humanMesh.getNormal(i);
+      normal = glm::normalize(normal);
       // Initial velocity for first flying coin creation.
-      c->velocity = glm::vec3(ofRandom(-3, 3), ofRandom(-3, 3), ofRandom(-1, 1));
+//      c->velocity = glm::vec3(ofRandom(-3, 3), ofRandom(-3, 3), ofRandom(-1, 1));
+      c->velocity = normal * ofRandom(-2, 2);
       flyingCoins.push_back(c);
     }
   }
@@ -242,14 +246,17 @@ void Form::createFlyingCoins() {
 void Form::updateFlyingCoins() {
   for (int i = 0; i < flyingCoins.size(); i++) {
     // Update this coin.
-    flyingCoins[i]->update(ofGetLastFrameTime()/ofRandom(1, 150));
+    flyingCoins[i]->update(ofGetLastFrameTime()/ofRandom(1, 100));
     
     // If it's not alive, reset the coin.
     if (!flyingCoins[i] -> isAlive()) {
       // Update coin at a position.
       int idxForPos = i % staticCoins.size();
       flyingCoins[i]->setPosition(staticCoins[idxForPos]->getPosition());
-      flyingCoins[i]->velocity = glm::vec3(ofRandom(-2, 2), ofRandom(-2, 2), ofRandom(-1, 1));
+       auto normal = humanMesh.getNormal(i);
+      normal = glm::normalize(normal);
+      flyingCoins[i]->velocity = normal * 2.5;
+//      flyingCoins[i]->velocity = glm::vec3(ofRandom(-2, 2), ofRandom(-2, 2), ofRandom(-1, 1));
       flyingCoins[i]->life = 1.0;
     }
     
