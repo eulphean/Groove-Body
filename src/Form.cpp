@@ -134,7 +134,7 @@ void Form::draw() {
           if (staticCoins.size() > 0) {
             coinShader.begin();
               coinShader.setUniform3f("uLightPosition", glm::vec3(xCoinLight, yCoinLight, zCoinLight));
-              coinShader.setUniform4f("uMaterialColor", ofColor(ofColor::yellowGreen));
+              coinShader.setUniform4f("uMaterialColor", ofColor(ofColor::gold));
               coinMesh.drawInstanced(OF_MESH_FILL, size);
             coinShader.end();
           }
@@ -158,7 +158,7 @@ void Form::initCamera() {
 
 void Form::setupShaderBuffer() {
   // Max coins are 15 x totalVertices
-  maxCoins = humanMesh.getVertices().size() * 12;
+  maxCoins = humanMesh.getVertices().size() * 15;
   
   // Max number of coin transformations this matrix will hold.
   // This is static + flying coins.

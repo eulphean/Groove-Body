@@ -4,12 +4,10 @@ uniform mat4 modelViewProjectionMatrix;
 uniform samplerBuffer tex;
 
 in vec4 position;
-in vec4 color; 
 in vec4 normal; 
 in vec2 texcoord;
 
-out vec4 meshColor;
-out vec3 vecNormal;
+// out vec3 vecNormal;
 out vec4 vecPosition;
 out vec2 texCoordVarying;
 
@@ -26,6 +24,5 @@ void main(){
     // vecNormal = normal.xyz;
     gl_Position = vecPosition;
 
-    // meshColor = color;
     texCoordVarying = texcoord; 
 }
