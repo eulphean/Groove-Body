@@ -30,8 +30,6 @@ class Form {
     // Expose the model to get and set specific properties
     ofxAssimpModelLoader model;
   
-    // Lighting.
-  
     // Coins
     ofParameter<float> xCoinLight { "x: Coin light", 0, -5000, 5000 };
     ofParameter<float> yCoinLight { "y: Coing light", 500, -5000, 5000 };
@@ -48,7 +46,6 @@ class Form {
     ofMesh humanMesh;
     ofShader meshShader;
   
-    ofVboMesh cylinderMesh;
     vector<Coin*> staticCoins;
     vector<Coin*> flyingCoins;
   
@@ -57,6 +54,11 @@ class Form {
     ofBufferObject buffer;
     vector<ofMatrix4x4> coinMatrices;
     ofTexture tex;
+  
+    // Coin model.
+    ofxAssimpModelLoader coinModel;
+    ofVboMesh cylinderMesh;
+    ofVboMesh coinMesh;
   
     float meshOpacity;
     vector<DrawMode> drawModes;

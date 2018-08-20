@@ -5,6 +5,9 @@ void ofApp::setup(){
     // Verbose, Notice, Warning, Error, FatalError, Silent
     ofSetLogLevel(OF_LOG_NOTICE);
     ofSetVerticalSync(true);
+    ofDisableArbTex();
+    ofEnableAntiAliasing();
+    ofEnableSmoothing();
   
     ofSetCylinderResolution(10, 10);
   
@@ -65,8 +68,8 @@ void ofApp::draw(){
   }
   
   ofEnableDepthTest();
-  // Draw the model.
-  currentForm.draw();
+    // Draw the model.
+    currentForm.draw();
   ofDisableDepthTest();
 }
 

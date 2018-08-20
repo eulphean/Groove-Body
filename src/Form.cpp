@@ -1,6 +1,13 @@
 #include "Form.h"
 
 void Form::setup(string modelPath) {
+  // Load the coin model.
+  coinModel.loadModel("coin.dae", true);
+  coinModel.setPosition(0, 0, 0);
+  coinModel.enableTextures();
+  coinModel.disableMaterials();
+  coinMesh = coinModel.getMesh(0); // Get the coin mesh that'll be instanced.
+  
   // Load our model and set it up for animations.
   model.loadModel(modelPath, false);
   model.setPosition(0, 0, 0);
@@ -9,7 +16,10 @@ void Form::setup(string modelPath) {
   model.setLoopStateForAllAnimations(OF_LOOP_NORMAL);
   model.setPausedForAllAnimations(false);
   model.playAllAnimations();
+  
+  // Some model smoothing.
   glShadeModel(GL_SMOOTH);
+  glEnable(GL_NORMALIZE);
   
   // Load mesh shader.
   meshShader.load("mesh.vert", "mesh.frag");
@@ -125,7 +135,7 @@ void Form::draw() {
             coinShader.begin();
               coinShader.setUniform3f("uLightPosition", glm::vec3(xCoinLight, yCoinLight, zCoinLight));
               coinShader.setUniform4f("uMaterialColor", ofColor(ofColor::yellowGreen));
-              cylinderMesh.drawInstanced(OF_MESH_FILL, size);
+              coinMesh.drawInstanced(OF_MESH_FILL, size);
             coinShader.end();
           }
         }
@@ -163,10 +173,14 @@ void Form::setupShaderBuffer() {
   // each row of the matrix as a vec4.
   tex.allocateAsBufferTexture(buffer,GL_RGBA32F);
 
+  auto coinTex = coinModel.getMeshHelper(0).getTextureRef();
+  coinTex.generateMipmap();
+  coinTex.setTextureMinMagFilter(GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST);
   // Set texture uniform in the shader. 
   coinShader.load("coin.vert","coin.frag");
   coinShader.begin();
   coinShader.setUniformTexture("tex",tex,0);
+  coinShader.setUniformTexture("coinTex",coinTex,1);
   coinShader.end();
 
   // Set the geometry which will be drawn as an instance drawing.
@@ -186,6 +200,7 @@ void Form::createStaticCoins() {
   for (int i = 0; i < vertices.size(); i++) {
     Coin *c = new Coin;
     auto position = concatMatrix.preMult((ofVec3f) vertices[i]);
+    c->setScale(4.0);
     c->setPosition(position); // position.
     c->velocity = glm::vec3(0, 0, 0); // static.
     staticCoins.push_back(c);
@@ -214,6 +229,7 @@ void Form::createFlyingCoins() {
     for (int i = 0; i < staticCoins.size(); i++) {
       Coin *c = new Coin;
       c->setPosition(staticCoins[i]->getPosition());
+      c->setScale(10.0);
       // Initial velocity for first flying coin creation.
       c->velocity = glm::vec3(ofRandom(-3, 3), ofRandom(-3, 3), ofRandom(-1, 1));
       flyingCoins.push_back(c);
