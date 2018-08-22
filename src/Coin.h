@@ -6,9 +6,7 @@ class Coin : public ofNode {
   public:
     void update(float step) {
       this->setPosition(this->getPosition() + velocity);
-      this->rotate(rotation, 1.0, 0, 0.0); // Constant rotation.
-      this->rotate(rotation, 0.0, 1.0, 0.0); // Constant rotation.
-      this->rotate(rotation, 0.0, 0, 1.0); // Constant rotation.
+      this->rotate(rotation, rotAxis); // Constant rotation.
       life = life - step;
     }
   
@@ -18,5 +16,6 @@ class Coin : public ofNode {
   
     glm::vec3 velocity;
     float life = 1.0;
-    float rotation = ofRandom(-0.5, 0.5);
+    float rotation = ofRandom(-0.2, 0.2);
+    glm::vec3 rotAxis = glm::vec3(ofRandom(-1, 1), ofRandom(-1, 1), ofRandom(-1, 1));
 };

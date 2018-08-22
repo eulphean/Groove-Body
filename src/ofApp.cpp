@@ -117,6 +117,10 @@ void ofApp::keyPressed(int key){
   if (key == 'h') {
     hideControls = !hideControls; 
   }
+  
+  if (key == 'e') {
+    currentForm.emitCoins();
+  }
 }
 
 void ofApp::loadForms() {

@@ -2,6 +2,7 @@
 
 uniform mat4 modelViewProjectionMatrix;
 uniform samplerBuffer tex;
+uniform mat4 coinMat;
 
 in vec4 position;
 in vec4 normal; 
@@ -20,7 +21,9 @@ void main(){
         texelFetch(tex, x+3)
     );	
 
-    vecPosition = modelViewProjectionMatrix * transformMatrix * position;
+    vec4 coinPositon = coinMat * position; 
+    vec4 nodePosition = transformMatrix * coinPositon;
+    vecPosition = modelViewProjectionMatrix * nodePosition;
     // vecNormal = normal.xyz;
     gl_Position = vecPosition;
 

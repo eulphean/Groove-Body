@@ -22,6 +22,7 @@ class Form {
     void popDrawMode(DrawMode mode);
     int getDynamicParticleCount();
     int getMeshVertexCount();
+    void emitCoins();
   
     // Important methods. 
     void setup(string modelPath);
@@ -64,7 +65,7 @@ class Form {
   
     int maxCoins; // Static + Dynamic coins.
     float initTime;
-    bool turnOnFlyingCoins;
+    bool shouldEmitCoins;
   
     // Shader
     void setupShaderBuffer();

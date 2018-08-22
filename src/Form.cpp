@@ -3,7 +3,7 @@
 void Form::setup(string modelPath) {
   // Initializing constants.
   initTime = ofGetElapsedTimeMillis();
-  turnOnFlyingCoins = false;
+  shouldEmitCoins = false;
   
   // Load our model and set it up for animations.
   model.loadModel(modelPath, false);
@@ -80,7 +80,7 @@ void Form::update() {
   // Coins.
   updateStaticCoins();
   
-  if (turnOnFlyingCoins) {
+  if (shouldEmitCoins) {
     // Create flying coins x seconds after model is created to avoid a sudden burst.
     if (ofGetElapsedTimeMillis() - initTime > 5000) {
       createFlyingCoins();
@@ -162,13 +162,15 @@ void Form::setupShaderBuffer() {
   coinMesh = coinModel.getMesh(0); // Get the coin mesh that'll be instanced.
   coinMesh.setUsage(GL_STATIC_DRAW);
   
-  // Setup coin texture to be sent to the shader. 
-  auto coinTex = coinModel.getMeshHelper(0).getTextureRef();
+  // Setup coin texture to be sent to the shader.
+  auto meshHelper = coinModel.getMeshHelper(0);
+  auto coinTex = meshHelper.getTextureRef();
+  auto coinMatrix = meshHelper.matrix;
   coinTex.generateMipmap();
   coinTex.setTextureMinMagFilter(GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST);
   
   // Max coins are 15 x totalVertices
-  maxCoins = humanMesh.getVertices().size() * 12;
+  maxCoins = humanMesh.getVertices().size() * 7;
   
   // Max number of coin transformations this matrix will hold.
   // This is static + flying coins.
@@ -186,6 +188,7 @@ void Form::setupShaderBuffer() {
   // Set texture uniform in the shader. 
   coinShader.load("coin.vert","coin.frag");
   coinShader.begin();
+  coinShader.setUniformMatrix4f("coinMat", coinMatrix);
   coinShader.setUniformTexture("tex",tex,0);
   coinShader.setUniformTexture("coinTex",coinTex,1);
   coinShader.end();
@@ -197,7 +200,8 @@ void Form::createStaticCoins() {
   for (int i = 0; i < vertices.size(); i++) {
     Coin *c = new Coin;
     auto position = concatMatrix.preMult((ofVec3f) vertices[i]);
-    c->setScale(12.0);
+    c->lookAt(cam.getPosition());
+    c->setScale(10.0);
     c->setPosition(position); // position.
     c->velocity = glm::vec3(0, 0, 0); // static.
     staticCoins.push_back(c);
@@ -209,7 +213,6 @@ void Form::updateStaticCoins() {
   for (int i = 0; i < vertices.size(); i++) {
     // Animated position.
     auto position = concatMatrix.preMult((ofVec3f) vertices[i]);
-    
     staticCoins[i]->setPosition(position);
     staticCoins[i]->update(0); // Call update for rotation.
     
@@ -230,8 +233,6 @@ void Form::createFlyingCoins() {
       // Normal of the current point
       auto normal = humanMesh.getNormal(i);
       normal = glm::normalize(normal);
-      // Initial velocity for first flying coin creation.
-//      c->velocity = glm::vec3(ofRandom(-3, 3), ofRandom(-3, 3), ofRandom(-1, 1));
       c->velocity = normal * ofRandom(-3, 3);
       flyingCoins.push_back(c);
     }
@@ -241,17 +242,16 @@ void Form::createFlyingCoins() {
 void Form::updateFlyingCoins() {
   for (int i = 0; i < flyingCoins.size(); i++) {
     // Update this coin.
-    flyingCoins[i]->update(ofGetLastFrameTime()/ofRandom(10, 100));
+    flyingCoins[i]->update(ofGetLastFrameTime()/ofRandom(5, 15));
     
     // If it's not alive, reset the coin.
     if (!flyingCoins[i] -> isAlive()) {
       // Update coin at a position.
       int idxForPos = i % staticCoins.size();
       flyingCoins[i]->setPosition(staticCoins[idxForPos]->getPosition());
-       auto normal = humanMesh.getNormal(i);
+      auto normal = humanMesh.getNormal(i);
       normal = glm::normalize(normal);
       flyingCoins[i]->velocity = normal * 2.5;
-//      flyingCoins[i]->velocity = glm::vec3(ofRandom(-2, 2), ofRandom(-2, 2), ofRandom(-1, 1));
       flyingCoins[i]->life = 1.0;
     }
     
@@ -282,4 +282,8 @@ int Form::getDynamicParticleCount() {
 
 int Form::getMeshVertexCount() {
   return humanMesh.getVertices().size();
+}
+
+void Form::emitCoins() {
+  shouldEmitCoins = !shouldEmitCoins;
 }
