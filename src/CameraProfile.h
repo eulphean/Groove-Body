@@ -33,6 +33,7 @@ class BreathCam : public CameraProfile {
       startPos = glm::vec3(0, -100, 0);
       targetPos = glm::vec3(0, sceneCenter.y, 1650);
       camState = CamState::Tween; // Starting state.
+      orbit = 0; 
       // Order of the states is Tween -> Hold -> Orbit
     }
   
@@ -40,9 +41,9 @@ class BreathCam : public CameraProfile {
       switch (camState) {
         case CamState::Tween: {
           glm::vec3 lerpPos;
-          startPos.x = ofLerp(startPos.x, targetPos.x, 0.0005);
-          startPos.y = ofLerp(startPos.y, targetPos.y, 0.0005);
-          startPos.z = ofLerp(startPos.z, targetPos.z, 0.0008);
+          startPos.x = ofLerp(startPos.x, targetPos.x, 0.001);
+          startPos.y = ofLerp(startPos.y, targetPos.y, 0.001);
+          startPos.z = ofLerp(startPos.z, targetPos.z, 0.001);
          
           this->setPosition(startPos);
           this->lookAt(sceneCenter, glm::vec3(0, 1, 0));

@@ -1,6 +1,10 @@
 #include "Form.h"
 
 void Form::setup(string modelPath) {
+  // Initializing constants.
+  initTime = ofGetElapsedTimeMillis();
+  turnOnFlyingCoins = false;
+  
   // Load our model and set it up for animations.
   model.loadModel(modelPath, false);
   model.setPosition(0, 0, 0);
@@ -26,9 +30,6 @@ void Form::setup(string modelPath) {
   
   // Setup shader.
   setupShaderBuffer();
-  
-  // Store initialize time.
-  initTime = ofGetElapsedTimeMillis();
   
   // Create static coins.
   createStaticCoins();
@@ -78,10 +79,13 @@ void Form::update() {
   
   // Coins.
   updateStaticCoins();
-  // Create flying coins x seconds after model is created to avoid a sudden burst.
-  if (ofGetElapsedTimeMillis() - initTime > 5000) {
-    createFlyingCoins();
-    updateFlyingCoins();
+  
+  if (turnOnFlyingCoins) {
+    // Create flying coins x seconds after model is created to avoid a sudden burst.
+    if (ofGetElapsedTimeMillis() - initTime > 5000) {
+      createFlyingCoins();
+      updateFlyingCoins();
+    }
   }
 }
 
@@ -193,7 +197,7 @@ void Form::createStaticCoins() {
   for (int i = 0; i < vertices.size(); i++) {
     Coin *c = new Coin;
     auto position = concatMatrix.preMult((ofVec3f) vertices[i]);
-    c->setScale(8.0);
+    c->setScale(12.0);
     c->setPosition(position); // position.
     c->velocity = glm::vec3(0, 0, 0); // static.
     staticCoins.push_back(c);

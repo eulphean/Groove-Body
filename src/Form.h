@@ -63,7 +63,8 @@ class Form {
     vector<DrawMode> drawModes;
   
     int maxCoins; // Static + Dynamic coins.
-    float initTime; 
+    float initTime;
+    bool turnOnFlyingCoins;
   
     // Shader
     void setupShaderBuffer();
