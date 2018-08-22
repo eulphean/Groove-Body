@@ -64,7 +64,8 @@ class Form {
     vector<DrawMode> drawModes;
   
     int maxCoins; // Static + Dynamic coins.
-    float initTime;
+    float particleSetTime;
+    float particleWaitTime;
     bool shouldEmitCoins;
   
     // Shader

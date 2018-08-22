@@ -2,8 +2,9 @@
 
 void Form::setup(string modelPath) {
   // Initializing constants.
-  initTime = ofGetElapsedTimeMillis();
-  shouldEmitCoins = false;
+  particleWaitTime = 5000;
+  particleSetTime = ofGetElapsedTimeMillis();
+  shouldEmitCoins = true;
   
   // Load our model and set it up for animations.
   model.loadModel(modelPath, false);
@@ -82,10 +83,8 @@ void Form::update() {
   
   if (shouldEmitCoins) {
     // Create flying coins x seconds after model is created to avoid a sudden burst.
-    if (ofGetElapsedTimeMillis() - initTime > 5000) {
-      createFlyingCoins();
-      updateFlyingCoins();
-    }
+    createFlyingCoins();
+    updateFlyingCoins();
   }
 }
 
@@ -170,7 +169,7 @@ void Form::setupShaderBuffer() {
   coinTex.setTextureMinMagFilter(GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST);
   
   // Max coins are 15 x totalVertices
-  maxCoins = humanMesh.getVertices().size() * 7;
+  maxCoins = humanMesh.getVertices().size() * 9;
   
   // Max number of coin transformations this matrix will hold.
   // This is static + flying coins.
@@ -200,10 +199,9 @@ void Form::createStaticCoins() {
   for (int i = 0; i < vertices.size(); i++) {
     Coin *c = new Coin;
     auto position = concatMatrix.preMult((ofVec3f) vertices[i]);
+    c->setup(true, position);
     c->lookAt(cam.getPosition());
-    c->setScale(10.0);
-    c->setPosition(position); // position.
-    c->velocity = glm::vec3(0, 0, 0); // static.
+    c->setPosition(position);
     staticCoins.push_back(c);
   }
 }
@@ -224,34 +222,35 @@ void Form::updateStaticCoins() {
 }
 
 void Form::createFlyingCoins() {
-  // Only executes once and populates the flyingCoins vector.
-  while (flyingCoins.size() < maxCoins - staticCoins.size()) {
+  auto elapsedTime = ofGetElapsedTimeMillis() - particleSetTime;
+  if (elapsedTime > particleWaitTime && flyingCoins.size() < maxCoins - staticCoins.size()) {
     for (int i = 0; i < staticCoins.size(); i++) {
       Coin *c = new Coin;
-      c->setPosition(staticCoins[i]->getPosition());
-      c->setScale(10.0);
+      c->setup(false, staticCoins[i]->getPosition());
       // Normal of the current point
       auto normal = humanMesh.getNormal(i);
-      normal = glm::normalize(normal);
-      c->velocity = normal * ofRandom(-3, 3);
+      c->velocity = glm::normalize(normal) * ofRandom(-1, 1);
       flyingCoins.push_back(c);
     }
+    
+    // Reset tracking time and also wait time.
+    particleSetTime = ofGetElapsedTimeMillis();
+    particleWaitTime = 5000; // Milliseconds.
   }
 }
 
 void Form::updateFlyingCoins() {
   for (int i = 0; i < flyingCoins.size(); i++) {
     // Update this coin.
-    flyingCoins[i]->update(ofGetLastFrameTime()/ofRandom(5, 15));
+    flyingCoins[i]->update(0.0005);
     
     // If it's not alive, reset the coin.
     if (!flyingCoins[i] -> isAlive()) {
-      // Update coin at a position.
       int idxForPos = i % staticCoins.size();
       flyingCoins[i]->setPosition(staticCoins[idxForPos]->getPosition());
+      
       auto normal = humanMesh.getNormal(i);
-      normal = glm::normalize(normal);
-      flyingCoins[i]->velocity = normal * 2.5;
+      flyingCoins[i]->velocity = glm::normalize(normal) * ofRandom(-1, 1);
       flyingCoins[i]->life = 1.0;
     }
     
