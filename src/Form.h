@@ -55,9 +55,8 @@ class Form {
     vector<ofMatrix4x4> coinMatrices;
     ofTexture tex;
   
-    // Coin model.
+    // Coin model that'll be instanced. 
     ofxAssimpModelLoader coinModel;
-    ofVboMesh cylinderMesh;
     ofVboMesh coinMesh;
   
     float meshOpacity;

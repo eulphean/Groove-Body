@@ -1,13 +1,6 @@
 #include "Form.h"
 
 void Form::setup(string modelPath) {
-  // Load the coin model.
-  coinModel.loadModel("groovecoin3.dae", true);
-  coinModel.setPosition(0, 0, 0);
-  coinModel.enableTextures();
-  coinModel.disableMaterials();
-  coinMesh = coinModel.getMesh(0); // Get the coin mesh that'll be instanced.
-  
   // Load our model and set it up for animations.
   model.loadModel(modelPath, false);
   model.setPosition(0, 0, 0);
@@ -157,6 +150,19 @@ void Form::initCamera() {
 }
 
 void Form::setupShaderBuffer() {
+  // Load the coin model that'll be instanced.
+  coinModel.loadModel("groovecoin3.dae", true);
+  coinModel.setPosition(0, 0, 0);
+  coinModel.enableTextures();
+  coinModel.disableMaterials();
+  coinMesh = coinModel.getMesh(0); // Get the coin mesh that'll be instanced.
+  coinMesh.setUsage(GL_STATIC_DRAW);
+  
+  // Setup coin texture to be sent to the shader. 
+  auto coinTex = coinModel.getMeshHelper(0).getTextureRef();
+  coinTex.generateMipmap();
+  coinTex.setTextureMinMagFilter(GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST);
+  
   // Max coins are 15 x totalVertices
   maxCoins = humanMesh.getVertices().size() * 12;
   
@@ -172,11 +178,6 @@ void Form::setupShaderBuffer() {
   // Allocate as buffer texture. GL_RGBA32F allows us to get
   // each row of the matrix as a vec4.
   tex.allocateAsBufferTexture(buffer,GL_RGBA32F);
-
-  // Coin texture.
-  auto coinTex = coinModel.getMeshHelper(0).getTextureRef();
-  coinTex.generateMipmap();
-  coinTex.setTextureMinMagFilter(GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST);
   
   // Set texture uniform in the shader. 
   coinShader.load("coin.vert","coin.frag");
@@ -184,16 +185,6 @@ void Form::setupShaderBuffer() {
   coinShader.setUniformTexture("tex",tex,0);
   coinShader.setUniformTexture("coinTex",coinTex,1);
   coinShader.end();
-
-  // Set the geometry which will be drawn as an instance drawing.
-  ofCylinderPrimitive cylinder;
-  cylinder.set(5, 1);
-  cylinder.setResolution(15, 10);
-  cylinder.setCylinderColor(ofColor::darkGoldenRod);
-  cylinder.setTopCapColor(ofColor::gold);
-  cylinder.setBottomCapColor(ofColor::gold);
-  cylinderMesh = cylinder.getMesh();
-  cylinderMesh.setUsage(GL_STATIC_DRAW);
 }
 
 void Form::createStaticCoins() {
