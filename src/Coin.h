@@ -16,6 +16,6 @@ class Coin : public ofNode {
   
     glm::vec3 velocity;
     float life = 1.0;
-    float rotation = ofRandom(-0.2, 0.2);
-    glm::vec3 rotAxis = glm::vec3(ofRandom(-1, 1), ofRandom(-1, 1), ofRandom(-1, 1));
+    float rotation = ofRandom(-0.2, 0.2); // Pick a random rotation value. 
+    glm::vec3 rotAxis = glm::vec3(ofRandom(-1, 1), ofRandom(-1, 1), ofRandom(-1, 1)); // Pick a random rotation axis
 };
