@@ -2,7 +2,7 @@
 
 void Form::setup(string modelPath) {
   // Load the coin model.
-  coinModel.loadModel("coin.dae", true);
+  coinModel.loadModel("groovecoin3.dae", true);
   coinModel.setPosition(0, 0, 0);
   coinModel.enableTextures();
   coinModel.disableMaterials();
@@ -158,7 +158,7 @@ void Form::initCamera() {
 
 void Form::setupShaderBuffer() {
   // Max coins are 15 x totalVertices
-  maxCoins = humanMesh.getVertices().size() * 15;
+  maxCoins = humanMesh.getVertices().size() * 12;
   
   // Max number of coin transformations this matrix will hold.
   // This is static + flying coins.
@@ -176,7 +176,7 @@ void Form::setupShaderBuffer() {
   // Coin texture.
   auto coinTex = coinModel.getMeshHelper(0).getTextureRef();
   coinTex.generateMipmap();
-  coinTex.setTextureMinMagFilter(GL_LINEAR_MIPMAP_LINEAR, GL_NEAREST);
+  coinTex.setTextureMinMagFilter(GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST);
   
   // Set texture uniform in the shader. 
   coinShader.load("coin.vert","coin.frag");
@@ -231,13 +231,13 @@ void Form::createFlyingCoins() {
     for (int i = 0; i < staticCoins.size(); i++) {
       Coin *c = new Coin;
       c->setPosition(staticCoins[i]->getPosition());
-      c->setScale(7.0);
+      c->setScale(10.0);
       // Normal of the current point
       auto normal = humanMesh.getNormal(i);
       normal = glm::normalize(normal);
       // Initial velocity for first flying coin creation.
 //      c->velocity = glm::vec3(ofRandom(-3, 3), ofRandom(-3, 3), ofRandom(-1, 1));
-      c->velocity = normal * ofRandom(-2, 2);
+      c->velocity = normal * ofRandom(-3, 3);
       flyingCoins.push_back(c);
     }
   }
@@ -246,7 +246,7 @@ void Form::createFlyingCoins() {
 void Form::updateFlyingCoins() {
   for (int i = 0; i < flyingCoins.size(); i++) {
     // Update this coin.
-    flyingCoins[i]->update(ofGetLastFrameTime()/ofRandom(1, 100));
+    flyingCoins[i]->update(ofGetLastFrameTime()/ofRandom(10, 100));
     
     // If it's not alive, reset the coin.
     if (!flyingCoins[i] -> isAlive()) {
