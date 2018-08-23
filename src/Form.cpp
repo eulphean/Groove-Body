@@ -228,13 +228,13 @@ void Form::createFlyingCoins() {
       c->setup(false, staticCoins[i]->getPosition());
       // Normal of the current point
       auto normal = humanMesh.getNormal(i);
-      c->velocity = glm::normalize(normal) * ofRandom(0.5, 0.9); // For static ofRandom(0.01, 0.05)
+      c->velocity = glm::normalize(normal) * ofRandom(0.01, 0.05); // For static ofRandom(0.01, 0.05)
       flyingCoins.push_back(c);
     }
     
     // Reset tracking time and also wait time.
     particleSetTime = ofGetElapsedTimeMillis();
-    particleWaitTime = 5000; // Milliseconds.
+    particleWaitTime = ofLerp(particleWaitTime/10000, 3.0, 0.25) * 10000; // Milliseconds.
   }
 }
 
@@ -254,10 +254,11 @@ void Form::updateFlyingCoins() {
       
       // Setup again.
       flyingCoins[i]->setup(false, startPos);
+      flyingCoins[i]->acceleration = 0.001;
 
       // Velocity
       auto normal = humanMesh.getNormal(idxForPos);
-      flyingCoins[i]->velocity = glm::normalize(normal) * ofRandom(0.5, 0.9); // For static ofRandom(0.01, 0.05)
+      flyingCoins[i]->velocity = glm::normalize(normal) * 0.05; // Updated coins fly faster
     }
     
     // Update coinMatrix with the transformation matrix for flying coins.
