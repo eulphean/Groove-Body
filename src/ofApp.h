@@ -26,6 +26,8 @@ class ofApp : public ofBaseApp{
   
     // Hide/Show things
     bool hideControls = false;
+    bool saveFrame = false;
+    int screenCaptureIdx = 0;
   
     // GUI
     ofxPanel gui;

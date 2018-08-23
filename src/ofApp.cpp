@@ -72,6 +72,12 @@ void ofApp::draw(){
   ofEnableDepthTest();
     // Draw the model.
     currentForm.draw();
+  
+    // Save frames
+    if (saveFrame) {
+      ofSaveFrame(true);
+    }
+  
   ofDisableDepthTest();
 }
 
@@ -120,6 +126,18 @@ void ofApp::keyPressed(int key){
   
   if (key == 'e') {
     currentForm.emitCoins();
+  }
+  
+  // Press everytime you want a screen capture. 
+  if (key == 's') {
+    auto fileName = "Capture_" + ofToString(screenCaptureIdx) + ".png";
+    ofSaveScreen(fileName);
+    screenCaptureIdx++;
+  }
+  
+  // Press it again to stop saving frames.
+  if (key == 'f') {
+    saveFrame = !saveFrame;
   }
 }
 
