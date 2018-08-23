@@ -229,7 +229,7 @@ void Form::createFlyingCoins() {
       c->setup(false, staticCoins[i]->getPosition());
       // Normal of the current point
       auto normal = humanMesh.getNormal(i);
-      c->velocity = glm::normalize(normal) * ofRandom(-1, 1);
+      c->velocity = glm::normalize(normal) * 0.25; // 0.01 for fixed poses, 0.5 for moving.
       flyingCoins.push_back(c);
     }
     
@@ -242,16 +242,23 @@ void Form::createFlyingCoins() {
 void Form::updateFlyingCoins() {
   for (int i = 0; i < flyingCoins.size(); i++) {
     // Update this coin.
-    flyingCoins[i]->update(0.0005);
+    flyingCoins[i]->update(0.001);
     
     // If it's not alive, reset the coin.
     if (!flyingCoins[i] -> isAlive()) {
+      // If we don't reset transform, the coin becomes weirdly scaled and bulgy looking.
+      flyingCoins[i]->resetTransform();
+  
+      // Initial position
       int idxForPos = i % staticCoins.size();
-      flyingCoins[i]->setPosition(staticCoins[idxForPos]->getPosition());
+      auto startPos = staticCoins[idxForPos]->getPosition();
       
-      auto normal = humanMesh.getNormal(i);
-      flyingCoins[i]->velocity = glm::normalize(normal) * ofRandom(-1, 1);
-      flyingCoins[i]->life = 1.0;
+      // Setup again.
+      flyingCoins[i]->setup(false, startPos);
+
+      // Velocity
+      auto normal = humanMesh.getNormal(idxForPos);
+      flyingCoins[i]->velocity = glm::normalize(normal) * 0.25; // 0.01 for fixed poses, 0.5 for moving.
     }
     
     // Update coinMatrix with the transformation matrix for flying coins.

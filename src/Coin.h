@@ -5,28 +5,38 @@
 class Coin : public ofNode {
   public:
     void setup(bool isStatic, glm::vec3 position) {
+      this->life = 1.0;
+      this->curRotation = 0;
       this->setPosition(position);
       rotAxis = glm::vec3(ofRandom(-1, 1), ofRandom(-1, 1), ofRandom(-1, 1)); // Pick a standard rotation axis.
       
       // Static vs. Flying coin settings.
       if (isStatic) {
-        rotation = ofRandom(-0.1, 0.1); // Pick a slow random rotation value. Don't want static coins to be rotating too quickly.
+        rotation = 0.1; // Pick a slow random rotation value. Don't want static coins to be rotating too quickly.
         this->velocity = glm::vec3(0, 0, 0);
         this->setScale(10.0); // size.
       } else {
-        rotation = ofRandom(-1.0, 1.0); // Rotation can be bigger for this. 
+        rotation = 1.0; // Rotation can be bigger for this.
         this->setScale(8.0);
-        this->acceleration = 0.001;
+        this->acceleration = 0.005;
       }
     }
   
     void update(float step) {
       this->setPosition(this->getPosition() + velocity);
-      this->rotate(rotation, rotAxis);
+      this->rotateDeg(rotation, rotAxis);
+      this->curRotation+= this->rotation;
       
       if (!isStatic) {
         auto f = this->velocity * this->acceleration;
         this->velocity += f;
+      } else {
+        // If it's a static coin, we must reset its transform else it scales and becomes really weird. 
+        if (this->curRotation == 360) {
+          auto curPos = this->getPosition();
+          this->resetTransform();
+          this->setup(false, curPos);
+        }
       }
       
       life = life - step;
@@ -41,6 +51,7 @@ class Coin : public ofNode {
     float rotation;
     float acceleration;
     glm::vec3 rotAxis; // Pick a random rotation axis
+    float curRotation;
   
     float life = 1.0;
   
