@@ -4,7 +4,8 @@
 
 class Coin : public ofNode {
   public:
-    void setup(bool isStatic, glm::vec3 position) {
+    void setup(bool isThisStatic, glm::vec3 position) {
+      this->isStatic = isThisStatic;
       this->life = 1.0;
       this->curRotation = 0;
       this->setPosition(position);
@@ -25,12 +26,12 @@ class Coin : public ofNode {
     void update(float step) {
       this->setPosition(this->getPosition() + velocity);
       this->rotateDeg(rotation, rotAxis);
-      this->curRotation+= this->rotation;
       
       if (!isStatic) {
         auto f = this->velocity * this->acceleration;
         this->velocity += f;
       } else {
+        this->curRotation+= this->rotation;
         // If it's a static coin, we must reset its transform else it scales and becomes really weird. 
         if (this->curRotation == 360) {
           auto curPos = this->getPosition();

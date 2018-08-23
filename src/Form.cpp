@@ -200,7 +200,6 @@ void Form::createStaticCoins() {
     Coin *c = new Coin;
     auto position = concatMatrix.preMult((ofVec3f) vertices[i]);
     c->setup(true, position);
-    c->lookAt(cam.getPosition());
     c->setPosition(position);
     staticCoins.push_back(c);
   }
@@ -229,13 +228,13 @@ void Form::createFlyingCoins() {
       c->setup(false, staticCoins[i]->getPosition());
       // Normal of the current point
       auto normal = humanMesh.getNormal(i);
-      c->velocity = glm::normalize(normal) * 0.25; // 0.01 for fixed poses, 0.5 for moving.
+      c->velocity = glm::normalize(normal) * 0.2; // 0.01 for fixed poses, 0.5 for moving.
       flyingCoins.push_back(c);
     }
     
     // Reset tracking time and also wait time.
     particleSetTime = ofGetElapsedTimeMillis();
-    particleWaitTime = 5000; // Milliseconds.
+    particleWaitTime = 1000; // Milliseconds.
   }
 }
 
@@ -258,7 +257,7 @@ void Form::updateFlyingCoins() {
 
       // Velocity
       auto normal = humanMesh.getNormal(idxForPos);
-      flyingCoins[i]->velocity = glm::normalize(normal) * 0.25; // 0.01 for fixed poses, 0.5 for moving.
+      flyingCoins[i]->velocity = glm::normalize(normal) * 0.2; // 0.01 for fixed poses, 0.5 for moving.
     }
     
     // Update coinMatrix with the transformation matrix for flying coins.
