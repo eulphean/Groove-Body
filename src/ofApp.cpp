@@ -49,12 +49,27 @@ void ofApp::setup(){
   
     // Initialize the current form
     currentForm.setup(formPaths[formPathIdx]);
+  
+    // Setup fbo.
+    fbo.allocate(5782, 3946, GL_RGBA);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
   // Update the form for animation.
   currentForm.update();
+  
+  // Only for screen capturing.
+  if (fboDraw) {
+    fbo.begin();
+      ofClear(ofColor::black);
+      ofEnableDepthTest();
+      // Draw the model.
+      currentForm.draw();
+    
+      ofDisableDepthTest();
+    fbo.end();
+  }
 }
 
 //--------------------------------------------------------------
@@ -69,16 +84,13 @@ void ofApp::draw(){
     ofDrawBitmapStringHighlight("Model name: " + formPaths[formPathIdx], 50, 55);
   }
   
-  ofEnableDepthTest();
-    // Draw the model.
-    currentForm.draw();
-  
-    // Save frames
-    if (saveFrame) {
-      ofSaveFrame(true);
-    }
-  
-  ofDisableDepthTest();
+  if (fboDraw) {
+    fbo.draw(0, 0, ofGetWidth(), ofGetHeight());
+  } else {
+    ofEnableDepthTest();
+      currentForm.draw();
+    ofDisableDepthTest();
+  }
 }
 
 void ofApp::exit() {
@@ -128,16 +140,17 @@ void ofApp::keyPressed(int key){
     currentForm.emitCoins();
   }
   
-  // Press everytime you want a screen capture. 
-  if (key == 's') {
-    auto fileName = "Capture_" + ofToString(screenCaptureIdx) + ".png";
-    ofSaveScreen(fileName);
-    screenCaptureIdx++;
+  //////// --------- High-Res capture. First enable fbo draw. Then 's' to to save the image. //////
+  if (key == 'f') {
+    fboDraw = !fboDraw;
   }
   
-  // Press it again to stop saving frames.
-  if (key == 'f') {
-    saveFrame = !saveFrame;
+  if (key == 's') {
+    ofPixels pix;
+    fbo.readToPixels(pix);
+    auto fileName = "High_Res" + ofToString(screenCaptureIdx) + ".png";
+    screenCaptureIdx++;
+    ofSaveImage(pix, fileName, OF_IMAGE_QUALITY_BEST);
   }
 }
 

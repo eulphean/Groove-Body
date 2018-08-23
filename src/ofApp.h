@@ -21,12 +21,14 @@ class ofApp : public ofBaseApp{
     int formPathIdx = 0;
     vector<string> formPaths;
   
+    ofFbo fbo;
+  
     // Plane
     ofPlanePrimitive plane; 
   
     // Hide/Show things
     bool hideControls = false;
-    bool saveFrame = false;
+    bool fboDraw = false;
     int screenCaptureIdx = 0;
   
     // GUI
