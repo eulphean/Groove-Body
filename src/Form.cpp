@@ -8,8 +8,8 @@ void Form::setup(string modelPath) {
   
   // Load our model and set it up for animations.
   model.loadModel(modelPath, false);
-  model.setPosition(0, 0, 0);
   model.setRotation(0, 180, 0, 0, 1);
+  model.setPosition(0, 0, 0);
   model.setScale(1.5, 1.5, 1.5);
   model.setLoopStateForAllAnimations(OF_LOOP_NORMAL);
   model.setPausedForAllAnimations(false);
@@ -37,9 +37,18 @@ void Form::setup(string modelPath) {
   
   // Initialize camera
   initCamera();
+  
+  // Setup plane
+  plane.set(2000, 2000);
+  plane.setPosition(glm::vec3(0, 0, planeOrigin.z));
+  plane.rotateDeg(90, 1, 0, 0);
+  plane.setResolution(50, 50);
 }
 
 void Form::deallocate() {
+  // Reset plane
+  plane.resetTransform();
+  
   // Reset concat matrix to an identity matrix where nothing
   // is transformed at all.
   concatMatrix.makeIdentityMatrix();
@@ -90,6 +99,10 @@ void Form::update() {
 
 void Form::draw() {
   cam.begin();
+    ofPushStyle();
+      ofSetColor(ofColor::slateGrey, 60);
+      plane.drawWireframe();
+    ofPopStyle();
   
     for (auto mode: drawModes) {
       switch (mode) {
@@ -149,6 +162,9 @@ void Form::initCamera() {
   auto sceneMin = model.getSceneMin() * model.getNormalizedScale() * model.getScale();
   auto sceneMax = model.getSceneMax() * model.getNormalizedScale() * model.getScale();
   auto head = glm::vec3(sceneCenter.x, sceneMax.y, sceneCenter.z);
+  width = abs(sceneMin.x - sceneMax.x);
+  height = abs(sceneMin.z - sceneMax.z);
+  planeOrigin = glm::vec3 (sceneCenter.x, 0, sceneCenter.z);
   cam.init(sceneCenter, sceneMin, sceneMax, head);
 }
 
@@ -254,7 +270,7 @@ void Form::updateFlyingCoins() {
       
       // Setup again.
       flyingCoins[i]->setup(false, startPos);
-      flyingCoins[i]->acceleration = 0.001;
+      flyingCoins[i]->acceleration = 0.01;
 
       // Velocity
       auto normal = humanMesh.getNormal(idxForPos);

@@ -17,13 +17,7 @@ void ofApp::setup(){
     ofBackground(backgroundColor);
   
     // Load all the forms. 
-    loadForms(); 
-  
-    // Setup plane.
-    plane.set(1000, 1000);
-    plane.setPosition(0, 0, 0);
-    plane.rotateDeg(90, 1, 0, 0);
-    plane.setResolution(10, 10);
+    loadForms();
   
     // Setup GUI.
     gui.setup();
@@ -74,6 +68,7 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
+  
   // Controls and debug.
   if (!hideControls) {
     gui.draw();

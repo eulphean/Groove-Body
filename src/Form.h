@@ -42,6 +42,8 @@ class Form {
     ofParameter<float> zMeshLight { "z: Mesh light", 500, -50000, 50000 };
   private:
     BreathCam cam;
+  
+    ofPlanePrimitive plane; 
     
     ofMatrix4x4 concatMatrix;
     ofMesh humanMesh;
@@ -59,6 +61,9 @@ class Form {
     // Coin model that'll be instanced. 
     ofxAssimpModelLoader coinModel;
     ofVboMesh coinMesh;
+    int width;
+    int height;
+    glm::vec3 planeOrigin; 
   
     float meshOpacity;
     vector<DrawMode> drawModes;

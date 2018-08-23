@@ -23,9 +23,6 @@ class ofApp : public ofBaseApp{
   
     ofFbo fbo;
   
-    // Plane
-    ofPlanePrimitive plane; 
-  
     // Hide/Show things
     bool hideControls = false;
     bool fboDraw = false;

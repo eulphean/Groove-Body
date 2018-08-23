@@ -47,7 +47,7 @@ class BreathCam : public CameraProfile {
          
           this->setPosition(startPos);
           this->lookAt(sceneCenter, glm::vec3(0, 1, 0));
-          
+//
           if (glm::distance(startPos, targetPos) < 150) {
             camState = CamState::Hold;
             initHoldTime = ofGetElapsedTimeMillis();

@@ -19,7 +19,7 @@ class Coin : public ofNode {
       } else {
         rotation = 2.0; // Rotation can be bigger for this.
         this->setScale(10.0);
-        this->acceleration = 0.005;
+        this->acceleration = 0.007;
       }
     }
   
