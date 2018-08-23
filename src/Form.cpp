@@ -39,7 +39,7 @@ void Form::setup(string modelPath) {
   initCamera();
   
   // Setup plane
-  plane.set(2000, 2000);
+  plane.set(2500, 2500);
   plane.setPosition(glm::vec3(0, 0, planeOrigin.z));
   plane.rotateDeg(90, 1, 0, 0);
   plane.setResolution(50, 50);
@@ -100,7 +100,7 @@ void Form::update() {
 void Form::draw() {
   cam.begin();
     ofPushStyle();
-      ofSetColor(ofColor::slateGrey, 60);
+      ofSetColor(ofColor::slateGrey, 40);
       plane.drawWireframe();
     ofPopStyle();
   
