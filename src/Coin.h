@@ -17,9 +17,9 @@ class Coin : public ofNode {
         this->velocity = glm::vec3(0, 0, 0);
         this->setScale(10.0); // size.
       } else {
-        rotation = 1.0; // Rotation can be bigger for this.
-        this->setScale(8.0);
-        this->acceleration = 0.005;
+        rotation = 2.0; // Rotation can be bigger for this.
+        this->setScale(10.0);
+        this->acceleration = 0.003;
       }
     }
   

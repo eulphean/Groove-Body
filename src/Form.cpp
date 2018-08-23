@@ -169,7 +169,7 @@ void Form::setupShaderBuffer() {
   coinTex.setTextureMinMagFilter(GL_NEAREST_MIPMAP_NEAREST, GL_NEAREST);
   
   // Max coins are 15 x totalVertices
-  maxCoins = humanMesh.getVertices().size() * 9;
+  maxCoins = humanMesh.getVertices().size() * 11;
   
   // Max number of coin transformations this matrix will hold.
   // This is static + flying coins.
@@ -228,20 +228,20 @@ void Form::createFlyingCoins() {
       c->setup(false, staticCoins[i]->getPosition());
       // Normal of the current point
       auto normal = humanMesh.getNormal(i);
-      c->velocity = glm::normalize(normal) * 0.2; // 0.01 for fixed poses, 0.5 for moving.
+      c->velocity = glm::normalize(normal) * ofRandom(0.5, 0.9); // For static ofRandom(0.01, 0.05)
       flyingCoins.push_back(c);
     }
     
     // Reset tracking time and also wait time.
     particleSetTime = ofGetElapsedTimeMillis();
-    particleWaitTime = 1000; // Milliseconds.
+    particleWaitTime = 5000; // Milliseconds.
   }
 }
 
 void Form::updateFlyingCoins() {
   for (int i = 0; i < flyingCoins.size(); i++) {
     // Update this coin.
-    flyingCoins[i]->update(0.001);
+    flyingCoins[i]->update(ofGetLastFrameTime()/ofRandom(10, 100));
     
     // If it's not alive, reset the coin.
     if (!flyingCoins[i] -> isAlive()) {
@@ -257,7 +257,7 @@ void Form::updateFlyingCoins() {
 
       // Velocity
       auto normal = humanMesh.getNormal(idxForPos);
-      flyingCoins[i]->velocity = glm::normalize(normal) * 0.2; // 0.01 for fixed poses, 0.5 for moving.
+      flyingCoins[i]->velocity = glm::normalize(normal) * ofRandom(0.5, 0.9); // For static ofRandom(0.01, 0.05)
     }
     
     // Update coinMatrix with the transformation matrix for flying coins.

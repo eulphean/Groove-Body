@@ -31,7 +31,7 @@ class BreathCam : public CameraProfile {
   public:
     void setup() {
       startPos = glm::vec3(0, -100, 0);
-      targetPos = glm::vec3(0, sceneCenter.y, 1200);
+      targetPos = glm::vec3(0, sceneCenter.y, 2000);
       camState = CamState::Tween; // Starting state.
       orbit = 0; 
       // Order of the states is Tween -> Hold -> Orbit
