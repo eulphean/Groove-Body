@@ -156,14 +156,24 @@ void ofApp::keyPressed(int key){
 
 void ofApp::loadForms() {
   // Load all the models.
-  ofDirectory dir("Forms/");
-  dir.allowExt("dae");
-  dir.listDir();
-  for (int i = 0; i < dir.size(); i++) {
-    string filePath = dir.getPath(i);
-    formPaths.push_back(filePath);
-  }
-  
+//  ofDirectory dir("Forms/");
+////  dir.allowExt("dae");
+////  dir.listDir();
+////  for (int i = 0; i < dir.size(); i++) {
+////    string filePath = dir.getPath(i);
+////    formPaths.push_back(filePath);
+////  }
+//
+  // Custom order. 
+  formPaths.push_back("Forms/A1.dae");
+  formPaths.push_back("Forms/A3.dae");
+  formPaths.push_back("Forms/A4.dae");
+  formPaths.push_back("Forms/A2.dae");
+  formPaths.push_back("Forms/B4.dae");
+  formPaths.push_back("Forms/B3.dae");
+  formPaths.push_back("Forms/B1.dae");
+  formPaths.push_back("Forms/B2.dae");
+
   ofLogNotice() << "Success: All the dae animations loaded." << "\n";
 }
 

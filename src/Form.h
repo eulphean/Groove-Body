@@ -62,9 +62,8 @@ class Form {
     // Coin model that'll be instanced. 
     ofxAssimpModelLoader coinModel;
     ofVboMesh coinMesh;
-    int width;
-    int height;
-    glm::vec3 planeOrigin; 
+    glm::vec3 planeOrigin;
+    bool isDynamic = false;
   
     float meshOpacity;
     vector<DrawMode> drawModes;

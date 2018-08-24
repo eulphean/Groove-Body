@@ -236,8 +236,8 @@ class A4Cam : public CameraProfile {
 class B1Cam : public CameraProfile {
   public:
     void setup() {
-      startPos = glm::vec3(head.x, head.y + 5000, head.z);
-      targetPos = glm::vec3(0, sceneCenter.y, 2000);
+      startPos = glm::vec3(1000, sceneCenter.y + 5000, -3000);
+      targetPos = glm::vec3(0, sceneCenter.y, 4000);
       camState = CamState::Tween; // Starting state.
       orbit = 0;
       // Order of the states is Tween -> Hold -> Orbit
@@ -379,7 +379,7 @@ class B3Cam : public CameraProfile {
   
     glm::vec3 startPos;
     glm::vec3 targetPos;
-    float lerpVal = 0.01;
+    float lerpVal = 0.002;
     unsigned long int initHoldTime;
     const long int maxHoldTime = 2000;
     float orbit;
@@ -388,7 +388,7 @@ class B3Cam : public CameraProfile {
 class B4Cam : public CameraProfile {
   public:
     void setup() {
-      startPos = glm::vec3(-200, -500 , 0);
+      startPos = glm::vec3(0, sceneCenter.y, -3000);
       targetPos = glm::vec3(0, sceneCenter.y, 2000);
       camState = CamState::Tween; // Starting state.
       orbit = 0;

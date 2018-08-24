@@ -168,28 +168,34 @@ void Form::initCamera(string modelPath) {
   // Select the camera. 
   if (result[0] == "A1") {
     cam = new A1Cam();
+    isDynamic = false;
   } else if (result[0] == "A2") {
     cam = new A2Cam();
+    isDynamic = false;
   } else if (result[0] == "A3") {
     cam = new A3Cam();
+    isDynamic = false;
   } else if (result[0] == "A4") {
     cam = new A4Cam();
+    isDynamic = false;
   } else if (result[0] == "B1") {
     cam = new B1Cam();
+    isDynamic = true;
   } else if (result[0] == "B2") {
     cam = new B2Cam();
+    isDynamic = true;
   } else if (result[0] == "B3") {
     cam = new B3Cam();
+    isDynamic = true;
   } else if (result[0] == "B4") {
     cam = new B4Cam();
+    isDynamic = true;
   }
   
   auto sceneCenter = model.getSceneCenter() * model.getNormalizedScale() * model.getScale();
   auto sceneMin = model.getSceneMin() * model.getNormalizedScale() * model.getScale();
   auto sceneMax = model.getSceneMax() * model.getNormalizedScale() * model.getScale();
   auto head = glm::vec3(sceneCenter.x, sceneMax.y, sceneCenter.z);
-  width = abs(sceneMin.x - sceneMax.x);
-  height = abs(sceneMin.z - sceneMax.z);
   planeOrigin = glm::vec3 (sceneCenter.x, 0, sceneCenter.z);
   cam->init(sceneCenter, sceneMin, sceneMax, head);
 }
@@ -271,7 +277,13 @@ void Form::createFlyingCoins() {
       c->setup(false, staticCoins[i]->getPosition());
       // Normal of the current point
       auto normal = humanMesh.getNormal(i);
-      c->velocity = glm::normalize(normal) * ofRandom(0.01, 0.05); // For static ofRandom(0.01, 0.05)
+      float randConstant;
+      if (isDynamic) {
+        randConstant = ofRandom(0.09, 0.4); // For moving motion form.
+      } else {
+        randConstant = ofRandom(0.01, 0.5);
+      }
+      c->velocity = glm::normalize(normal) * randConstant; // For static ofRandom(0.01, 0.05)
       flyingCoins.push_back(c);
     }
     
