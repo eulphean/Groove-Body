@@ -23,6 +23,7 @@ class Form {
     int getDynamicParticleCount();
     int getMeshVertexCount();
     void emitCoins();
+    void resetCam();
   
     // Important methods. 
     void setup(string modelPath);
@@ -41,7 +42,7 @@ class Form {
     ofParameter<float> yMeshLight { "y: Mesh light", 500, -10000, 10000 };
     ofParameter<float> zMeshLight { "z: Mesh light", 500, -50000, 50000 };
   private:
-    BreathCam cam;
+    CameraProfile *cam;
   
     ofPlanePrimitive plane; 
     
@@ -85,5 +86,5 @@ class Form {
     void updateFlyingCoins();
   
     // Camera
-    void initCamera();
+    void initCamera(string modelPath);
 };

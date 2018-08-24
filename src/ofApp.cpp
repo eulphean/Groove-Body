@@ -147,6 +147,11 @@ void ofApp::keyPressed(int key){
     screenCaptureIdx++;
     ofSaveImage(pix, fileName, OF_IMAGE_QUALITY_BEST);
   }
+  
+  // Reset the entire model. 
+  if (key == 'r') {
+    currentForm.resetCam();
+  }
 }
 
 void ofApp::loadForms() {
@@ -160,11 +165,6 @@ void ofApp::loadForms() {
   }
   
   ofLogNotice() << "Success: All the dae animations loaded." << "\n";
-}
-
-// GUI callbacks.
-void ofApp::cameraTiltCallback(float &angle) {
-  //cam.tiltDeg(angle);
 }
 
 void ofApp::wireframeCallback(bool &value) {

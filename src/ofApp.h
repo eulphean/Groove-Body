@@ -35,7 +35,6 @@ class ofApp : public ofBaseApp{
     const string guiXml = "humanform.xml";
   
     // GUI callbacks
-    void cameraTiltCallback(float &angle);
     void wireframeCallback(bool &value);
     void facesCallback(bool &value);
     void verticesCallback(bool &value);

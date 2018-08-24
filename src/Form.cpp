@@ -15,6 +15,15 @@ void Form::setup(string modelPath) {
   model.setPausedForAllAnimations(false);
   model.playAllAnimations();
   
+  // Assign the camera for the right model.
+  initCamera(modelPath);
+  
+  // Setup plane
+  plane.set(2500, 2500);
+  plane.setPosition(glm::vec3(0, 0, planeOrigin.z));
+  plane.rotateDeg(90, 1, 0, 0);
+  plane.setResolution(50, 50);
+  
   // Some model smoothing.
   glShadeModel(GL_SMOOTH);
   glEnable(GL_NORMALIZE);
@@ -34,18 +43,12 @@ void Form::setup(string modelPath) {
   
   // Create static coins.
   createStaticCoins();
-  
-  // Initialize camera
-  initCamera();
-  
-  // Setup plane
-  plane.set(2500, 2500);
-  plane.setPosition(glm::vec3(0, 0, planeOrigin.z));
-  plane.rotateDeg(90, 1, 0, 0);
-  plane.setResolution(50, 50);
 }
 
 void Form::deallocate() {
+  // Delete cam
+  delete cam;
+  
   // Reset plane
   plane.resetTransform();
   
@@ -78,7 +81,7 @@ void Form::deallocate() {
 
 void Form::update() {
   // Camera
-  cam.update();
+  cam->update();
   
   // Opacity of the model mesh.
   meshOpacity = ofMap(ofSignedNoise(ofGetElapsedTimef() * 0.2), -1, 1, 0, 0.3, true);
@@ -98,7 +101,7 @@ void Form::update() {
 }
 
 void Form::draw() {
-  cam.begin();
+  cam->begin();
     ofPushStyle();
       ofSetColor(ofColor::slateGrey, 40);
       plane.drawWireframe();
@@ -154,10 +157,25 @@ void Form::draw() {
       }
     }
   
-  cam.end();
+  cam->end();
 }
 
-void Form::initCamera() {
+void Form::initCamera(string modelPath) {
+  // Name comes in as "Forms/A1.dae"
+  auto result = ofSplitString(modelPath, "/");
+  result = ofSplitString(result[1], ".");
+  
+  // Select the camera. 
+  if (result[0] == "A1") {
+    cam = new A1Cam();
+  } else if (result[0] == "A2") {
+    cam = new A2Cam();
+  } else if (result[0] == "A3") {
+    cam = new A3Cam();
+  } else if (result[0] == "A4") {
+    cam = new A4Cam();
+  }
+  
   auto sceneCenter = model.getSceneCenter() * model.getNormalizedScale() * model.getScale();
   auto sceneMin = model.getSceneMin() * model.getNormalizedScale() * model.getScale();
   auto sceneMax = model.getSceneMax() * model.getNormalizedScale() * model.getScale();
@@ -165,7 +183,7 @@ void Form::initCamera() {
   width = abs(sceneMin.x - sceneMax.x);
   height = abs(sceneMin.z - sceneMax.z);
   planeOrigin = glm::vec3 (sceneCenter.x, 0, sceneCenter.z);
-  cam.init(sceneCenter, sceneMin, sceneMax, head);
+  cam->init(sceneCenter, sceneMin, sceneMax, head);
 }
 
 void Form::setupShaderBuffer() {
@@ -217,6 +235,7 @@ void Form::createStaticCoins() {
     auto position = concatMatrix.preMult((ofVec3f) vertices[i]);
     c->setup(true, position);
     c->setPosition(position);
+    c->lookAt(cam->getPosition());
     staticCoins.push_back(c);
   }
 }
@@ -308,4 +327,8 @@ int Form::getMeshVertexCount() {
 
 void Form::emitCoins() {
   shouldEmitCoins = !shouldEmitCoins;
+}
+
+void Form::resetCam() {
+  cam->reset();
 }
