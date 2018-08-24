@@ -174,6 +174,14 @@ void Form::initCamera(string modelPath) {
     cam = new A3Cam();
   } else if (result[0] == "A4") {
     cam = new A4Cam();
+  } else if (result[0] == "B1") {
+    cam = new B1Cam();
+  } else if (result[0] == "B2") {
+    cam = new B2Cam();
+  } else if (result[0] == "B3") {
+    cam = new B3Cam();
+  } else if (result[0] == "B4") {
+    cam = new B4Cam();
   }
   
   auto sceneCenter = model.getSceneCenter() * model.getNormalizedScale() * model.getScale();

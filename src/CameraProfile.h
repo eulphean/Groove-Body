@@ -231,3 +231,208 @@ class A4Cam : public CameraProfile {
     const long int maxHoldTime = 5000;
     float orbit;
 };
+
+
+class B1Cam : public CameraProfile {
+  public:
+    void setup() {
+      startPos = glm::vec3(head.x, head.y + 5000, head.z);
+      targetPos = glm::vec3(0, sceneCenter.y, 2000);
+      camState = CamState::Tween; // Starting state.
+      orbit = 0;
+      // Order of the states is Tween -> Hold -> Orbit
+    }
+  
+    void update() {
+      switch (camState) {
+        case CamState::Tween: {
+          glm::vec3 lerpPos;
+          startPos.x = ofLerp(startPos.x, targetPos.x, lerpVal);
+          startPos.y = ofLerp(startPos.y, targetPos.y, lerpVal);
+          startPos.z = ofLerp(startPos.z, targetPos.z, lerpVal);
+         
+          this->setPosition(startPos);
+          this->lookAt(sceneCenter, glm::vec3(0, 1, 0));
+          
+          if (glm::distance(startPos, targetPos) < 150) {
+            camState = CamState::Hold;
+            initHoldTime = ofGetElapsedTimeMillis();
+          }
+          break;
+        }
+        
+        case CamState::Hold: {
+          auto hasElapsed = (ofGetElapsedTimeMillis() - initHoldTime) > maxHoldTime;
+          if (hasElapsed) {
+            camState = CamState::Tween;
+            startPos = targetPos;
+            targetPos = glm::vec3(0, sceneCenter.y, -2000);
+            lerpVal = 0.0005; // Slowly tween between start and end position.
+            camState = CamState::Tween;
+          }
+          break;
+        }
+      }
+    }
+  
+    float lerpVal = 0.002;
+    glm::vec3 startPos;
+    glm::vec3 targetPos;
+    unsigned long int initHoldTime;
+    const long int maxHoldTime = 2000;
+    float orbit;
+};
+
+class B2Cam : public CameraProfile {
+  public:
+    void setup() {
+      startPos = glm::vec3(1500, sceneCenter.y, -3000);
+      targetPos = glm::vec3(sceneCenter.x, sceneCenter.y, 3000);
+      camState = CamState::Tween; // Starting state.
+      orbit = 0;
+      // Order of the states is Tween -> Hold -> Orbit
+    }
+  
+    void update() {
+      switch (camState) {
+        case CamState::Tween: {
+          glm::vec3 lerpPos;
+          startPos.x = ofLerp(startPos.x, targetPos.x, 0.002);
+          startPos.y = ofLerp(startPos.y, targetPos.y, 0.002);
+          startPos.z = ofLerp(startPos.z, targetPos.z, 0.002);
+         
+          this->setPosition(startPos);
+          this->lookAt(sceneCenter, glm::vec3(0, 1, 0));
+          
+          if (glm::distance(startPos, targetPos) < 150) {
+            camState = CamState::Hold;
+            initHoldTime = ofGetElapsedTimeMillis();
+          }
+          break;
+        }
+        
+        case CamState::Hold: {
+          auto hasElapsed = (ofGetElapsedTimeMillis() - initHoldTime) > maxHoldTime;
+          if (hasElapsed) {
+            camState = CamState::Orbit;
+            orbit = this->getHeadingDeg();
+          }
+          break;
+        }
+        
+        case CamState::Orbit: {
+          orbit += ofGetLastFrameTime() * 2;
+          this->orbitDeg(orbit, 0, glm::distance(this->getPosition(), sceneCenter), sceneCenter);
+          break;
+        }
+      }
+    }
+  
+    glm::vec3 startPos;
+    glm::vec3 targetPos;
+    unsigned long int initHoldTime;
+    const long int maxHoldTime = 2000;
+    float orbit;
+};
+
+class B3Cam : public CameraProfile {
+  public:
+    void setup() {
+      startPos = glm::vec3(head.x, head.y + 5000, head.z);
+      targetPos = glm::vec3(sceneCenter.x, sceneCenter.y, -3000);
+      camState = CamState::Tween; // Starting state.
+      orbit = 0;
+      // Order of the states is Tween -> Hold -> Orbit
+    }
+  
+    void update() {
+      switch (camState) {
+        case CamState::Tween: {
+          glm::vec3 lerpPos;
+          startPos.x = ofLerp(startPos.x, targetPos.x, lerpVal);
+          startPos.y = ofLerp(startPos.y, targetPos.y, lerpVal);
+          startPos.z = ofLerp(startPos.z, targetPos.z, lerpVal);
+         
+          this->setPosition(startPos);
+          this->lookAt(sceneCenter, glm::vec3(0, 1, 0));
+          
+          if (glm::distance(startPos, targetPos) < 150) {
+            camState = CamState::Hold;
+            initHoldTime = ofGetElapsedTimeMillis();
+          }
+          break;
+        }
+        
+        case CamState::Hold: {
+          auto hasElapsed = (ofGetElapsedTimeMillis() - initHoldTime) > maxHoldTime;
+          if (hasElapsed) {
+            camState = CamState::Tween;
+            startPos = this->getPosition();
+            targetPos = glm::vec3(sceneCenter.x, sceneCenter.y + 3000, head.z);
+            camState = CamState::Tween;
+            lerpVal = 0.001;
+          }
+          break;
+        }
+      }
+    }
+  
+    glm::vec3 startPos;
+    glm::vec3 targetPos;
+    float lerpVal = 0.01;
+    unsigned long int initHoldTime;
+    const long int maxHoldTime = 2000;
+    float orbit;
+};
+
+class B4Cam : public CameraProfile {
+  public:
+    void setup() {
+      startPos = glm::vec3(-200, -500 , 0);
+      targetPos = glm::vec3(0, sceneCenter.y, 2000);
+      camState = CamState::Tween; // Starting state.
+      orbit = 0;
+      // Order of the states is Tween -> Hold -> Orbit
+    }
+  
+    void update() {
+      switch (camState) {
+        case CamState::Tween: {
+          glm::vec3 lerpPos;
+          startPos.x = ofLerp(startPos.x, targetPos.x, 0.002);
+          startPos.y = ofLerp(startPos.y, targetPos.y, 0.002);
+          startPos.z = ofLerp(startPos.z, targetPos.z, 0.002);
+         
+          this->setPosition(startPos);
+          this->lookAt(sceneCenter, glm::vec3(0, 1, 0));
+          
+          if (glm::distance(startPos, targetPos) < 150) {
+            camState = CamState::Hold;
+            initHoldTime = ofGetElapsedTimeMillis();
+          }
+          break;
+        }
+        
+        case CamState::Hold: {
+          auto hasElapsed = (ofGetElapsedTimeMillis() - initHoldTime) > maxHoldTime;
+          if (hasElapsed) {
+            camState = CamState::Orbit;
+            orbit = this->getHeadingDeg();
+          }
+          break;
+        }
+        
+        case CamState::Orbit: {
+          orbit += ofGetLastFrameTime() * 2;
+          this->orbitDeg(orbit, 0, glm::distance(this->getPosition(), sceneCenter), sceneCenter);
+          break;
+        }
+      }
+    }
+  
+    glm::vec3 startPos;
+    glm::vec3 targetPos;
+    unsigned long int initHoldTime;
+    const long int maxHoldTime = 2000;
+    float orbit;
+};
