@@ -103,7 +103,7 @@ void Form::update() {
 void Form::draw() {
   cam->begin();
     ofPushStyle();
-      ofSetColor(ofColor::slateGrey, 40);
+      ofSetColor(ofColor::slateGrey, 130);
       plane.drawWireframe();
     ofPopStyle();
   

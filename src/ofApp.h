@@ -16,6 +16,8 @@ class ofApp : public ofBaseApp{
     void keyPressed(int key);
   
   private:
+  
+    unsigned long time;
     // All the models.
     Form currentForm;
     int formPathIdx = 0;

@@ -2,6 +2,8 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    time = ofGetElapsedTimeMillis();
+  
     // Verbose, Notice, Warning, Error, FatalError, Silent
     ofSetLogLevel(OF_LOG_NOTICE);
     ofSetVerticalSync(true);
@@ -50,6 +52,13 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+
+  auto elapsedTime = ofGetElapsedTimeMillis() - time;
+  if (elapsedTime > 30000) {
+    keyPressed(' ');
+    time = ofGetElapsedTimeMillis();
+  }
+  
   // Update the form for animation.
   currentForm.update();
   
