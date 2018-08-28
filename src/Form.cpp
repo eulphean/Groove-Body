@@ -19,7 +19,7 @@ void Form::setup(string modelPath) {
   initCamera(modelPath);
   
   // Setup plane
-  plane.set(2500, 2500);
+  plane.set(4500, 4500);
   plane.setPosition(glm::vec3(0, 0, planeOrigin.z));
   plane.rotateDeg(90, 1, 0, 0);
   plane.setResolution(50, 50);
@@ -189,6 +189,9 @@ void Form::initCamera(string modelPath) {
     isDynamic = true;
   } else if (result[0] == "B4") {
     cam = new B4Cam();
+    isDynamic = true;
+  } else if (result[0] == "B5") {
+    cam = new B5Cam();
     isDynamic = true;
   }
   

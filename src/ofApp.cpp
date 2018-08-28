@@ -54,7 +54,7 @@ void ofApp::setup(){
 void ofApp::update(){
 
   auto elapsedTime = ofGetElapsedTimeMillis() - time;
-  if (elapsedTime > 30000) {
+  if (elapsedTime > 120000) {
     keyPressed(' ');
     time = ofGetElapsedTimeMillis();
   }
@@ -104,7 +104,6 @@ void ofApp::exit() {
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
   if (key == ' ') {
-    
     // Deallocate the current form completely.
     currentForm.deallocate();
     
@@ -131,6 +130,9 @@ void ofApp::keyPressed(int key){
     if (vertices == true) {
       currentForm.pushDrawMode(DrawMode::Vertices);
     }
+    
+    // Reset time and sart counting again.
+    time = ofGetElapsedTimeMillis();
     
     // Reset animation to start from the beginning. 
     currentForm.model.resetAllAnimations();
@@ -175,14 +177,15 @@ void ofApp::loadForms() {
 //
   // Custom order. 
   formPaths.push_back("Forms/A1.dae");
-  formPaths.push_back("Forms/A3.dae");
-  formPaths.push_back("Forms/A4.dae");
-  formPaths.push_back("Forms/A2.dae");
   formPaths.push_back("Forms/B4.dae");
-  formPaths.push_back("Forms/B3.dae");
+  formPaths.push_back("Forms/A3.dae");
   formPaths.push_back("Forms/B1.dae");
+  formPaths.push_back("Forms/A4.dae");
+  formPaths.push_back("Forms/B3.dae");
+  formPaths.push_back("Forms/A2.dae");
   formPaths.push_back("Forms/B2.dae");
-
+  formPaths.push_back("Forms/B5.dae");
+  
   ofLogNotice() << "Success: All the dae animations loaded." << "\n";
 }
 
